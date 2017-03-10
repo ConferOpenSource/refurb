@@ -1,0 +1,54 @@
+-- This file has been generated from package.yaml by hpack version 0.15.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           refurb
+version:        0.1.0.0
+synopsis:       Tools for maintaining a database
+description:    Tools for maintaining a database
+category:       Database
+homepage:       https://github.com/ConferHealth/refurb#readme
+maintainer:     it@confer.care
+copyright:      2017 Confer Health, Inc.
+build-type:     Simple
+cabal-version:  >= 1.10
+
+library
+  hs-source-dirs:
+      src
+  default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
+  ghc-options: -Wall -Werror -O2
+  build-depends:
+      base >= 4.7 && < 5
+    , Frames
+    , ansi-wl-pprint
+    , bytestring
+    , classy-prelude
+    , composite-base
+    , composite-opaleye
+    , dlist
+    , fast-logger
+    , lens
+    , monad-logger
+    , old-locale
+    , opaleye
+    , optparse-applicative
+    , postgresql-simple
+    , process
+    , product-profunctors
+    , template-haskell
+    , these
+    , thyme
+    , vector-space
+  exposed-modules:
+      Refurb
+      Refurb.Cli
+      Refurb.MigrationUtils
+      Refurb.Run
+      Refurb.Run.Backup
+      Refurb.Run.Info
+      Refurb.Run.Internal
+      Refurb.Run.Migrate
+      Refurb.Store
+      Refurb.Types
+  default-language: Haskell2010

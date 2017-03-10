@@ -1,0 +1,65 @@
+name:                refurb
+version:             0.1.0.0
+synopsis:            Tools for maintaining a database
+description:         Tools for maintaining a database
+homepage:            https://github.com/ConferHealth/refurb#readme
+maintainer:          it@confer.care
+copyright:           2017 Confer Health, Inc.
+category:            Database
+
+default-extensions:
+  - Arrows
+  - ConstraintKinds
+  - DataKinds
+  - DeriveGeneric
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - PatternSynonyms
+  - QuasiQuotes
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - ViewPatterns
+
+dependencies:
+  - base >= 4.7 && < 5
+  - Frames
+  - ansi-wl-pprint
+  - bytestring
+  - classy-prelude
+  - composite-base
+  - composite-opaleye
+  - dlist
+  - fast-logger
+  - lens
+  - monad-logger
+  - old-locale
+  - opaleye
+  - optparse-applicative
+  - postgresql-simple
+  - process
+  - product-profunctors
+  - template-haskell
+  - these
+  - thyme
+  - vector-space
+
+ghc-options:
+  - -Wall
+  - -Werror
+  - -O2
+
+library:
+  source-dirs: src

@@ -8,6 +8,7 @@ import System.Environment (getEnvironment)
 import System.Exit (ExitCode(ExitSuccess, ExitFailure))
 import qualified System.Process as Proc
 
+-- |Handle the @backup@ command by calling @pg_dump@ to save a database backup.
 backup :: MonadRefurb m => FilePath -> m ()
 backup path = do
   ConnInfo {..} <- asks contextDbConnInfo

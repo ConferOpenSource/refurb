@@ -15,6 +15,7 @@ import Refurb.Store (FKey, MigrationLog, cKey, fId, fApplied, fDuration, fOutput
 import Refurb.Types (Migration, MigrationType(MigrationSeedData), migrationKey, migrationType)
 import Text.PrettyPrint.ANSI.Leijen (Doc, (<+>), fill, bold, underline, black, red, white, parens, text)
 
+-- |Given a migration status as read by 'readMigrationStatus', pretty print that information as a table on stdout.
 showMigrationStatus :: (MonadRefurb m, MonoTraversable t, Element t ~ These Migration (Record MigrationLog)) => t -> m ()
 showMigrationStatus migrationStatus = do
   disp <- optionallyColoredM
@@ -46,6 +47,7 @@ showMigrationStatus migrationStatus = do
         <*> view (rlens fResult . to migrationResultDoc)
         <*> view (rlens fKey . to (white . text . unpack))
 
+-- |Implement the @show-log@ command by reading the entire migration log and displaying it with 'showMigrationStatus'.
 showLog :: MonadRefurb m => m ()
 showLog = do
   dbConn <- asks contextDbConn
@@ -53,6 +55,8 @@ showLog = do
   migrationStatus <- readMigrationStatus dbConn migrations (proc _ -> returnA -< ())
   showMigrationStatus migrationStatus
 
+-- |Implement the @show-migration@ command by reading migration log pertaining to the given migration key and displaying it with 'showMigrationStatus' plus
+-- its log output.
 showMigration :: MonadRefurb m => FKey -> m ()
 showMigration (view _Wrapped -> key) = do
   disp <- optionallyColoredM

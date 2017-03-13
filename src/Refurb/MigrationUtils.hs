@@ -8,6 +8,7 @@ import qualified Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.ToRow (toRow)
 import Database.PostgreSQL.Simple.Types (fromQuery)
 import qualified Opaleye
+import Opaleye.Internal.Table (tableIdentifier)
 import Refurb.Types (MonadMigration)
 
 -- |Execute some parameterized SQL against the database connection.
@@ -63,6 +64,27 @@ runQuery q = do
   conn <- ask
   for_ (Opaleye.showSql q) ($logDebug . pack)
   liftBase $ Opaleye.runQuery conn q
+
+-- |Run an Opaleye 'Opaleye.runInsertMany' against the database connection.
+runInsertMany :: MonadMigration m => Opaleye.Table columns columns' -> [columns] -> m Int64
+runInsertMany table rows = do
+  conn <- ask
+  $logDebug $ "inserting " <> tshow (length rows) <> " rows into " <> tshow (tableIdentifier table)
+  liftBase $ Opaleye.runInsertMany conn table rows
+
+-- |Run an Opaleye 'Opaleye.runUpdate' against the database connection.
+runUpdate :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> columnsW) -> (columnsR -> Opaleye.Column Opaleye.PGBool) -> m Int64
+runUpdate table permute filt = do
+  conn <- ask
+  $logDebug $ "updating " <> tshow (tableIdentifier table)
+  liftBase $ Opaleye.runUpdate conn table permute filt
+
+-- |Run an Opaleye 'Opaleye.runDelete' against the database connection.
+runDelete :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> Opaleye.Column Opaleye.PGBool) -> m Int64
+runDelete table filt = do
+  conn <- ask
+  $logDebug $ "deleting from " <> tshow (tableIdentifier table)
+  liftBase $ Opaleye.runDelete conn table filt
 
 -- |Check if a table exists using the @information_schema@ views.
 doesTableExist :: MonadMigration m => Text -> m Bool

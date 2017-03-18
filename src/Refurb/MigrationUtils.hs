@@ -4,12 +4,74 @@ module Refurb.MigrationUtils where
 import ClassyPrelude
 import Control.Monad.Logger (logDebug)
 import Data.Profunctor.Product.Default (Default)
+import qualified Data.Text as T
 import qualified Database.PostgreSQL.Simple as PG
 import Database.PostgreSQL.Simple.ToRow (toRow)
 import Database.PostgreSQL.Simple.Types (fromQuery)
+import qualified Language.Haskell.TH.Syntax as TH
+import qualified Language.Haskell.TH.Quote as TH
 import qualified Opaleye
 import Opaleye.Internal.Table (tableIdentifier)
 import Refurb.Types (MonadMigration)
+
+-- |Simple quasiquoter which just makes it easier to embed literal chunks of SQL in migrations.
+--
+-- For example:
+--
+-- @
+--   createStuffIndex :: MonadMigration m => m ()
+--   createStuffIndex =
+--     execute_
+--       [qqSql|
+--         create index stuff_index
+--           on stuff (things)
+--           where is_what_we_want_to_index = 't'
+--       |]
+-- @
+qqSql :: TH.QuasiQuoter
+qqSql = TH.QuasiQuoter
+  { TH.quoteExp  = \ s -> [| $(TH.lift s) :: PG.Query |]
+  , TH.quotePat  = error "qqSql should only be used in an expression context"
+  , TH.quoteType = error "qqSql should only be used in an expression context"
+  , TH.quoteDec  = error "qqSql should only be used in an expression context"
+  }
+
+-- |Quasiquoter which takes a block of literal SQL and converts it into a list of 'PG.Query' values, e.g. to pass to 'executeSeries_'. A semicolon at the
+-- beginning or end of a line (sans whitespace) separates SQL statements.
+--
+-- For example:
+--
+-- @
+--   createStuff :: MonadMigration m => m ()
+--   createStuff =
+--     executeSeries_ [qqSqls|
+--       create sequence stuff_seq;
+--       create table stuff
+--         ( id bigint not null primary key default nextval('stuff_seq')
+--         );
+--       |]
+-- @
+qqSqls :: TH.QuasiQuoter
+qqSqls = TH.QuasiQuoter
+  { TH.quoteExp  = \ s -> [| $(bodyToStatements s) :: [PG.Query] |]
+  , TH.quotePat  = error "qqSql should only be used in an expression context"
+  , TH.quoteType = error "qqSql should only be used in an expression context"
+  , TH.quoteDec  = error "qqSql should only be used in an expression context"
+  }
+  where
+    bodyToStatements :: String -> TH.Q TH.Exp
+    bodyToStatements = TH.lift . map (unpack . unlines) . filter (not . null) . map (filter (not . null)) . go [] . lines . pack
+      where
+        go acc [] = [acc]
+        go acc ((T.strip -> l):ls)
+          | Just l' <- T.stripSuffix ";" =<< T.stripPrefix ";" l =
+            reverse acc : [l'] : go [] ls
+          | Just l' <- T.stripPrefix ";" l =
+            reverse acc : go [l'] ls
+          | Just l' <- T.stripSuffix ";" l =
+            reverse (l' : acc) : go [] ls
+          | otherwise =
+            go (l : acc) ls
 
 -- |Execute some parameterized SQL against the database connection.
 -- Wraps 'PG.execute' using the 'MonadMigration' reader to get the connection.

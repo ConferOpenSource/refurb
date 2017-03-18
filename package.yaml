@@ -52,6 +52,7 @@ dependencies:
   - process
   - product-profunctors
   - template-haskell
+  - text
   - these
   - thyme
   - vector-space
@@ -63,3 +64,13 @@ ghc-options:
 
 library:
   source-dirs: src
+
+tests:
+  refurb-test:
+    source-dirs: test
+    main: Main.hs
+    ghc-options: -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
+    dependencies:
+      - refurb
+      - hspec
+

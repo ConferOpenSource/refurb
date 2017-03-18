@@ -36,6 +36,11 @@ execute_ q = do
   $logDebug . decodeUtf8 $ fromQuery q
   liftBase $ PG.execute_ conn q
 
+-- |Execute a series of fixed SQL statements against the database connection.
+-- Equivalent to `traverse_ (void . execute_)`
+executeSeries_ :: MonadMigration m => [PG.Query] -> m ()
+executeSeries_ = traverse_ (void . execute_)
+
 -- |Run a parameterized query against the database connection.
 -- Wraps 'PG.query' using the 'MonadMigration' reader to get the connection.
 query :: (MonadMigration m, PG.ToRow q, PG.FromRow r) => PG.Query -> q -> m [r]

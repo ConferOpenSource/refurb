@@ -4,7 +4,7 @@ module Refurb.Cli where
 import ClassyPrelude
 import Frames ((:->)(Col))
 import qualified Options.Applicative as OA
-import Refurb.Store (FKey)
+import Refurb.Store (FQualifiedKey)
 
 -- |Newtype wrapper for the @--execute@ boolean (@True@ if given, @False@ if omitted)
 newtype GoNoGo = GoNoGo Bool deriving (Eq, Show)
@@ -21,7 +21,7 @@ data Command
   -- ^Migrate the database or show what migrations would be applied, possibly backing up beforehand.
   | CommandShowLog
   -- ^Show the migration status.
-  | CommandShowMigration FKey
+  | CommandShowMigration FQualifiedKey
   -- ^Show status of a particular migration with its log output.
   | CommandBackup FilePath
   -- ^Back up the database.

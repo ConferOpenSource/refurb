@@ -8,11 +8,11 @@ import Data.Monoid (First)
 import Data.These (These(This, That, These), there)
 import Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import Data.Thyme.Format.Human (humanTimeDiff)
-import Frames (Record, rlens)
+import Frames (Record)
 import Opaleye ((.==), constant, restrict)
 import Refurb.Run.Internal (MonadRefurb, contextDbConn, contextMigrations, optionallyColoredM, migrationResultDoc)
-import Refurb.Store (FKey, MigrationLog, cKey, fId, fApplied, fDuration, fOutput, fResult, fKey, readMigrationStatus)
-import Refurb.Types (Migration, MigrationType(MigrationSeedData), migrationKey, migrationType)
+import Refurb.Store (FQualifiedKey, MigrationLog, cQualifiedKey, fId, fApplied, fDuration, fOutput, fResult, fQualifiedKey, readMigrationStatus)
+import Refurb.Types (Migration, MigrationType(MigrationSeedData), migrationQualifiedKey, migrationType)
 import Text.PrettyPrint.ANSI.Leijen (Doc, (<+>), fill, bold, underline, black, red, white, parens, text)
 
 -- |Given a migration status as read by 'readMigrationStatus', pretty print that information as a table on stdout.
@@ -23,7 +23,7 @@ showMigrationStatus migrationStatus = do
   for_ migrationStatus $ \ these ->
     disp $ case these of
       These m mlog -> mlogRow mlog <+> seedDoc m
-      This m       -> row (text "") (text "not applied") (text "") (text "") (white . text . unpack $ view migrationKey m) <+> seedDoc m
+      This m       -> row (text "") (text "not applied") (text "") (text "") (white . text . unpack $ migrationQualifiedKey m) <+> seedDoc m
       That mlog    -> mlogRow mlog <+> parens (red "not in known migrations")
 
   where
@@ -41,11 +41,11 @@ showMigrationStatus migrationStatus = do
     mlogRow :: Record MigrationLog -> Doc
     mlogRow =
       row
-        <$> field (rlens fId . to show)
-        <*> view (rlens fApplied . to (white . text . formatTime defaultTimeLocale "%F %T"))
-        <*> field (rlens fDuration . to (humanTimeDiff . (fromSeconds :: Double -> NominalDiffTime)))
-        <*> view (rlens fResult . to migrationResultDoc)
-        <*> view (rlens fKey . to (white . text . unpack))
+        <$> field (fId . to show)
+        <*> view (fApplied . to (white . text . formatTime defaultTimeLocale "%F %T"))
+        <*> field (fDuration . to (humanTimeDiff . (fromSeconds :: Double -> NominalDiffTime)))
+        <*> view (fResult . to migrationResultDoc)
+        <*> view (fQualifiedKey . to (white . text . unpack))
 
 -- |Implement the @show-log@ command by reading the entire migration log and displaying it with 'showMigrationStatus'.
 showLog :: MonadRefurb m => m ()
@@ -57,17 +57,17 @@ showLog = do
 
 -- |Implement the @show-migration@ command by reading migration log pertaining to the given migration key and displaying it with 'showMigrationStatus' plus
 -- its log output.
-showMigration :: MonadRefurb m => FKey -> m ()
+showMigration :: MonadRefurb m => FQualifiedKey -> m ()
 showMigration (view _Wrapped -> key) = do
   disp <- optionallyColoredM
   dbConn <- asks contextDbConn
-  migrations <- asks $ filter ((== key) . view migrationKey) . contextMigrations
+  migrations <- asks $ filter ((== key) . migrationQualifiedKey) . contextMigrations
   migrationStatus <- readMigrationStatus dbConn migrations $ proc mlog ->
-    restrict -< view (rlens cKey) mlog .== constant key
+    restrict -< view cQualifiedKey mlog .== constant key
 
   showMigrationStatus migrationStatus
   putStrLn ""
   case preview (each . there) migrationStatus of
     Nothing   -> disp . black $ "Never been run." -- n.b.: black is not black
-    Just mlog -> putStrLn . view (rlens fOutput) $ mlog
+    Just mlog -> putStrLn . view fOutput $ mlog
 

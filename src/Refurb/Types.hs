@@ -4,7 +4,7 @@ module Refurb.Types
   , connInfoAsConnString, connInfoAsLogString
   , MigrationType(..)
   , MonadMigration
-  , Migration(..), migrationKey, migrationType, migrationCheck, migrationExecute
+  , Migration(..), migrationSchema, migrationKey, migrationType, migrationCheck, migrationExecute, migrationQualifiedKey
   , schemaMigration, seedDataMigration, withCheck
   ) where
 
@@ -65,7 +65,9 @@ type MonadMigration m = (MonadBaseControl IO m, MonadMask m, MonadReader PG.Conn
 
 -- |Data type of a migration, with its key, type, and actions.
 data Migration = Migration
-  { _migrationKey     :: Text
+  { _migrationSchema  :: Text
+  -- ^Schema for the migration to run in, which also qualifies the migration key."
+  , _migrationKey     :: Text
   -- ^Unique key to identify this migration among all known migrations. Never reuse keys, as they're the only link between the stored migration log and known
   -- migrations.
   , _migrationType    :: MigrationType
@@ -76,21 +78,28 @@ data Migration = Migration
   -- ^Main migration action, such as creating tables or updating data.
   }
 
+-- |The fully qualified key of the migration, schema.key
+migrationQualifiedKey :: Migration -> Text
+migrationQualifiedKey (Migration { _migrationSchema, _migrationKey }) =
+  _migrationSchema <> "." <> _migrationKey
+
 makeLenses ''Migration
 
 -- |Helper to construct a 'MigrationSchema' type 'Migration' with the given execution action and no check action.
-schemaMigration :: Text -> (forall m. MonadMigration m => m ()) -> Migration
-schemaMigration key execute = Migration
-  { _migrationKey     = key
+schemaMigration :: Text -> Text -> (forall m. MonadMigration m => m ()) -> Migration
+schemaMigration schema key execute = Migration
+  { _migrationSchema  = schema
+  , _migrationKey     = key
   , _migrationType    = MigrationSchema
   , _migrationCheck   = Nothing
   , _migrationExecute = execute
   }
 
 -- |Helper to construct a 'MigrationSeedData' type 'Migration' with the given execution action and no check action.
-seedDataMigration :: Text -> (forall m. MonadMigration m => m ()) -> Migration
-seedDataMigration key execute = Migration
-  { _migrationKey     = key
+seedDataMigration :: Text -> Text -> (forall m. MonadMigration m => m ()) -> Migration
+seedDataMigration schema key execute = Migration
+  { _migrationSchema  = schema
+  , _migrationKey     = key
   , _migrationType    = MigrationSeedData
   , _migrationCheck   = Nothing
   , _migrationExecute = execute

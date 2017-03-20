@@ -11,14 +11,17 @@ import Data.Thyme.Clock (NominalDiffTime, getCurrentTime, toSeconds)
 import Data.Thyme.Format (formatTime)
 import Data.Thyme.Format.Human (humanTimeDiff)
 import Data.Thyme.Time.Core (fromThyme)
+import qualified Database.PostgreSQL.Simple as PG
+import qualified Database.PostgreSQL.Simple.Types as PG
 import Frames (Record, (&:), pattern Nil)
 import Language.Haskell.TH (Loc, loc_package, loc_module, loc_filename, loc_start)
 import Opaleye (constant, runInsertMany)
 import Refurb.Cli (GoNoGo(GoNoGo), PreMigrationBackup(PreMigrationBackup), InstallSeedData(InstallSeedData))
+import Refurb.MigrationUtils (doesSchemaExist)
 import Refurb.Run.Backup (backup)
 import Refurb.Run.Internal (MonadRefurb, contextDbConn, contextMigrations, optionallyColoredM)
 import Refurb.Store (MigrationLogW, MigrationLogColsW, MigrationResult(MigrationSuccess, MigrationFailure), migrationLog, isProdSystem, readMigrationStatus)
-import Refurb.Types (Migration, migrationKey, migrationType, migrationCheck, migrationExecute, MigrationType(MigrationSchema))
+import Refurb.Types (Migration, migrationQualifiedKey, migrationSchema, migrationType, migrationCheck, migrationExecute, MigrationType(MigrationSchema))
 import System.Exit (exitFailure)
 import System.Locale (defaultTimeLocale)
 import System.Log.FastLogger (LogStr, fromLogStr, toLogStr)
@@ -26,7 +29,7 @@ import Text.PrettyPrint.ANSI.Leijen (Doc, (</>), (<+>), hang, fillSep, red, gree
 
 -- |Helper which produces the standard prefix 'Doc' for a given migration: @migration key: @ with color.
 migrationPrefixDoc :: Migration -> Doc
-migrationPrefixDoc migration = white (text . unpack . view migrationKey $ migration) ++ text ":"
+migrationPrefixDoc migration = white (text . unpack . migrationQualifiedKey $ migration) ++ text ":"
 
 -- |Implement the @migrate@ command by verifying that seed data is only applied to non-production databases, reading the migration status, and determining
 -- from that status which migrations to apply. If the user requested execution of migrations, delegate to 'applyMigrations' to actually do the work.
@@ -44,7 +47,7 @@ migrate (GoNoGo isGo) backupMay (InstallSeedData shouldInstallSeedData) = do
   migrationStatus <- readMigrationStatus dbConn (filter useMigration migrations) (proc _ -> returnA -< ())
 
   let migrationsToApply = toListOf (each . _This) migrationStatus
-  disp . hang 2 $ "Migrations to apply: " </> fillSep (map ((++ text ",") . white . text . unpack . view migrationKey) migrationsToApply)
+  disp . hang 2 $ "Migrations to apply: " </> fillSep (map ((++ text ",") . white . text . unpack . migrationQualifiedKey) migrationsToApply)
 
   if isGo
     then traverse_ (\ (PreMigrationBackup path) -> backup path) backupMay >> applyMigrations migrationsToApply
@@ -61,6 +64,12 @@ applyMigrations migrations = do
   dbConn <- asks contextDbConn
 
   for_ migrations $ \ migration -> do
+    let schema = view migrationSchema migration
+    unlessM (runReaderT (doesSchemaExist schema) dbConn) $
+      void . liftIO $ PG.execute_ dbConn (PG.Query $ "create schema " <> encodeUtf8 schema)
+
+    void . liftIO $ PG.execute dbConn "set search_path = ?" (PG.Only $ view migrationSchema migration)
+
     for_ (view migrationCheck migration) $ \ check ->
       onException
         ( do runReaderT check dbConn
@@ -81,8 +90,9 @@ applyMigrations migrations = do
             MigrationFailure -> do disp $ migrationPrefixDoc migration <+> red   (text "failure") <+> suffix
                                    putStrLn output
 
+          void . liftIO $ PG.execute_ dbConn "set search_path = 'public'"
           liftIO . runInsertMany dbConn migrationLog . singleton . (constant :: Record MigrationLogW -> Record MigrationLogColsW) $
-            Nothing &: view migrationKey migration &: fromThyme start &: output &: result &: (toSeconds :: NominalDiffTime -> Double) duration &: Nil
+            Nothing &: migrationQualifiedKey migration &: fromThyme start &: output &: result &: (toSeconds :: NominalDiffTime -> Double) duration &: Nil
 
     onException
       ( do

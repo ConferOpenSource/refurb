@@ -153,7 +153,12 @@ runDelete table filt = do
   $logDebug $ "deleting from " <> tshow (tableIdentifier table)
   liftBase $ Opaleye.runDelete conn table filt
 
--- |Check if a table exists using the @information_schema@ views.
-doesTableExist :: MonadMigration m => Text -> m Bool
-doesTableExist t =
-  not . (null :: [PG.Only Int] -> Bool) <$> query "select 1 from information_schema.tables where table_name = ?" (PG.Only t)
+-- |Check if a schema exists using the @information_schema@ views.
+doesSchemaExist :: MonadMigration m => Text -> m Bool
+doesSchemaExist schema =
+  not . (null :: [PG.Only Int] -> Bool) <$> query "select 1 from information_schema.schemata where schema_name = ?" (PG.Only schema)
+
+-- |Check if a table exists in a schema using the @information_schema@ views.
+doesTableExist :: MonadMigration m => Text -> Text -> m Bool
+doesTableExist schema table =
+  not . (null :: [PG.Only Int] -> Bool) <$> query "select 1 from information_schema.tables where table_schema = ? and table_name = ?" (schema, table)

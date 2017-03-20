@@ -3,8 +3,8 @@ packages:
   - .
   - example
 extra-deps:
-  - composite-base-0.1.0.0
-  - composite-opaleye-0.1.0.0
+  - composite-base-0.1.1.0
+  - composite-opaleye-0.1.1.0
 flags: {}
 extra-package-dbs: []
 

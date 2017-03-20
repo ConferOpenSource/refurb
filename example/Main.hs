@@ -11,8 +11,8 @@ import Refurb
 
 migrations :: [Migration]
 migrations =
-  [ schemaMigration "create-first-table" createFirstTable
-  , seedDataMigration "populate-first-table" populateFirstTable `withCheck` firstTableMustExist
+  [ schemaMigration   "example" "create-first-table" createFirstTable
+  , seedDataMigration "example" "populate-first-table" populateFirstTable `withCheck` firstTableMustExist
   ]
 
 createFirstTable :: MonadMigration m => m ()
@@ -22,7 +22,7 @@ createFirstTable = do
 
 firstTableMustExist :: MonadMigration m => m ()
 firstTableMustExist =
-  doesTableExist "first_table" >>= bool (fail "first_table doesn't exist!!") (pure ())
+  doesTableExist "example" "first_table" >>= bool (fail "first_table doesn't exist!!") (pure ())
 
 populateFirstTable :: MonadMigration m => m ()
 populateFirstTable =

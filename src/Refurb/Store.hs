@@ -4,16 +4,16 @@ module Refurb.Store where
 import ClassyPrelude
 import Composite.Opaleye (defaultRecTable)
 import Composite.Opaleye.TH (deriveOpaleyeEnum)
-import Composite.TH (withProxies)
+import Composite.TH (withLensesAndProxies)
 import Control.Arrow (returnA)
 import Control.Lens (view)
 import Control.Monad.Logger (MonadLogger, logDebug)
 import Data.These (These(This, These, That))
 import qualified Database.PostgreSQL.Simple as PG
-import Frames ((:->), Record, rlens)
-import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(Table), asc, orderBy, queryTable, runQuery)
-import Refurb.MigrationUtils (doesTableExist)
-import Refurb.Types (Migration, migrationKey)
+import Frames ((:->), Record)
+import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), asc, orderBy, queryTable, runQuery)
+import Refurb.MigrationUtils (doesTableExist, qqSqls)
+import Refurb.Types (Migration, migrationQualifiedKey)
 
 -- |Result of running a migration, either success or failure.
 data MigrationResult
@@ -21,36 +21,36 @@ data MigrationResult
   | MigrationFailure
   deriving (Eq, Show)
 
-deriveOpaleyeEnum ''MigrationResult "migrationresult" (stripPrefix "migration" . toLower)
+deriveOpaleyeEnum ''MigrationResult "migration_result_enum" (stripPrefix "migration" . toLower)
 
-withProxies [d|
-  type FId       = "id"       :-> Int32
-  type FIdMay    = "id"       :-> Maybe Int32
-  type CId       = "id"       :-> Column PGInt4
-  type CIdMay    = "id"       :-> Maybe (Column PGInt4)
-  type FKey      = "key"      :-> Text
-  type CKey      = "key"      :-> Column PGText
-  type FApplied  = "applied"  :-> UTCTime
-  type CApplied  = "applied"  :-> Column PGTimestamptz
-  type FOutput   = "output"   :-> Text
-  type COutput   = "output"   :-> Column PGText
-  type FResult   = "result"   :-> MigrationResult
-  type CResult   = "result"   :-> Column PGMigrationResult
-  type FDuration = "duration" :-> Double
-  type CDuration = "duration" :-> Column PGFloat8
+withLensesAndProxies [d|
+  type FId           = "id"            :-> Int32
+  type FIdMay        = "id"            :-> Maybe Int32
+  type CId           = "id"            :-> Column PGInt4
+  type CIdMay        = "id"            :-> Maybe (Column PGInt4)
+  type FQualifiedKey = "qualified_key" :-> Text
+  type CQualifiedKey = "qualified_key" :-> Column PGText
+  type FApplied      = "applied"       :-> UTCTime
+  type CApplied      = "applied"       :-> Column PGTimestamptz
+  type FOutput       = "output"        :-> Text
+  type COutput       = "output"        :-> Column PGText
+  type FResult       = "result"        :-> MigrationResult
+  type CResult       = "result"        :-> Column PGMigrationResult
+  type FDuration     = "duration"      :-> Double
+  type CDuration     = "duration"      :-> Column PGFloat8
 
-  type FProdSystem = "prodsystem" :-> Bool
-  type CProdSystem = "prodsystem" :-> Column PGBool
+  type FProdSystem = "prod_system" :-> Bool
+  type CProdSystem = "prod_system" :-> Column PGBool
   |]
 
 -- |Fields of a migration log entry in memory fetched from the database (with ID)
-type MigrationLog      = '[FId   , FKey, FApplied, FOutput, FResult, FDuration]
+type MigrationLog      = '[FId   , FQualifiedKey, FApplied, FOutput, FResult, FDuration]
 -- |Fields of a migration log entry to insert in the database (with the ID column optional)
-type MigrationLogW     = '[FIdMay, FKey, FApplied, FOutput, FResult, FDuration]
+type MigrationLogW     = '[FIdMay, FQualifiedKey, FApplied, FOutput, FResult, FDuration]
 -- |Columns of a migration log when reading from the database (with ID)
-type MigrationLogColsR = '[CId   , CKey, CApplied, COutput, CResult, CDuration]
+type MigrationLogColsR = '[CId   , CQualifiedKey, CApplied, COutput, CResult, CDuration]
 -- |Columns of a migration log when inserting into the database (with ID column optional)
-type MigrationLogColsW = '[CIdMay, CKey, CApplied, COutput, CResult, CDuration]
+type MigrationLogColsW = '[CIdMay, CQualifiedKey, CApplied, COutput, CResult, CDuration]
 
 -- |Fields of the Refurb config in memory
 type RefurbConfig     = '[FProdSystem]
@@ -59,17 +59,17 @@ type RefurbConfigCols = '[CProdSystem]
 
 -- |The migration log table which records all executed migrations and their results
 migrationLog :: Table (Record MigrationLogColsW) (Record MigrationLogColsR)
-migrationLog = Table "refurb_migration_log" defaultRecTable
+migrationLog = TableWithSchema "refurb" "migration_log" defaultRecTable
 
 -- |The refurb config table which controls whether this database is considered a production one or not
 refurbConfig :: Table (Record RefurbConfigCols) (Record RefurbConfigCols)
-refurbConfig = Table "refurb_config" defaultRecTable
+refurbConfig = TableWithSchema "refurb" "config" defaultRecTable
 
 -- |Test to see if the schema seems to be installed by looking for an existing refurb_config table
 isSchemaPresent :: (MonadBaseControl IO m, MonadMask m, MonadLogger m) => PG.Connection -> m Bool
 isSchemaPresent conn = do
   $logDebug "Checking if schema present"
-  runReaderT (doesTableExist "refurb_config") conn
+  runReaderT (doesTableExist "refurb" "config") conn
 
 -- |Check if this database is configured as a production database by reading the refurb config table
 isProdSystem :: (MonadBaseControl IO m, MonadLogger m) => PG.Connection -> m Bool
@@ -77,27 +77,32 @@ isProdSystem conn = do
   $logDebug "Checking if this is a prod system"
   map (fromMaybe False . headMay) . liftBase . runQuery conn $ proc () -> do
     config <- queryTable refurbConfig -< ()
-    returnA -< view (rlens cProdSystem) config
+    returnA -< view cProdSystem config
 
 -- |Create the refurb schema elements. Will fail if they already exist.
 initializeSchema :: (MonadBaseControl IO m, MonadLogger m) => PG.Connection -> m ()
 initializeSchema conn = do
   $logDebug "Initializing refurb schema"
 
-  liftBase $ do
-    void $ PG.execute_ conn "create type migrationresult as enum('success', 'failure')"
-    void $ PG.execute_ conn "create table refurb_config (prodsystem boolean not null)"
-    void $ PG.execute_ conn "insert into refurb_config (prodsystem) values (false)"
-    void $ PG.execute_ conn "create sequence refurb_migration_log_serial"
-    void $ PG.execute_ conn "\
-      \create table refurb_migration_log (\
-      \  id int not null primary key default nextval('refurb_migration_log_serial'),\
-      \  key varchar not null unique,\
-      \  applied timestamp with time zone not null,\
-      \  output varchar not null,\
-      \  result migrationresult not null,\
-      \  duration double precision not null\
-      \)"
+  liftBase $ traverse_ (void . PG.execute_ conn) [qqSqls|
+    create schema refurb;
+    set search_path = 'refurb';
+    create type migration_result_enum as enum('success', 'failure');
+    create table config (prod_system boolean not null);
+    insert into config (prod_system) values (false);
+    create sequence migration_log_serial;
+    create table migration_log
+      ( id            int                   not null
+                                            primary key
+                                            default nextval('migration_log_serial')
+      , qualified_key text                  not null
+                                            unique
+      , applied       timestamptz           not null
+      , output        text                  not null
+      , result        migration_result_enum not null
+      , duration      double precision      not null
+      );
+    |]
 
 -- |Read the migration log and stitch it together with the expected migration list, forming a list in the same order as the known migrations but with
 -- 'These' representing whether the migration log for the known migration is present or not.
@@ -113,18 +118,18 @@ readMigrationStatus
   -> m [These Migration (Record MigrationLog)]
 readMigrationStatus conn migrations restriction = do
   $logDebug "Reading migration status"
-  migrationStatus <- liftBase $ runQuery conn . orderBy (asc $ view (rlens cKey)) $ proc () -> do
+  migrationStatus <- liftBase $ runQuery conn . orderBy (asc $ view cQualifiedKey) $ proc () -> do
     mlog <- queryTable migrationLog -< ()
     restriction -< mlog
     returnA -< mlog
 
-  let migrationLogByKey = mapFromList . map (view (rlens fKey) &&& id) $ migrationStatus
+  let migrationLogByKey = mapFromList . map (view fQualifiedKey &&& id) $ migrationStatus
 
       alignMigration
         :: Migration
         -> ([These Migration (Record MigrationLog)], Map Text (Record MigrationLog))
         -> ([These Migration (Record MigrationLog)], Map Text (Record MigrationLog))
-      alignMigration m@(view migrationKey -> k) (t, l) =
+      alignMigration m@(migrationQualifiedKey -> k) (t, l) =
         first ((:t) . maybe (This m) (These m)) (updateLookupWithKey (\ _ _ -> Nothing) k l)
 
       (aligned, extra) = foldr alignMigration ([], migrationLogByKey) migrations

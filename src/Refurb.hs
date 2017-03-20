@@ -59,6 +59,7 @@ refurbMain readConnInfo migrations = do
 
       unlessM (isSchemaPresent conn) $ initializeSchema conn
 
+      void . liftIO $ PG.execute_ conn "set search_path = 'public'"
       flip runReaderT context $
         case command of
           CommandMigrate goNoGo backupMay installSeedData ->

@@ -10,6 +10,7 @@ category:       Database
 homepage:       https://github.com/ConferHealth/refurb#readme
 maintainer:     it@confer.care
 copyright:      2017 Confer Health, Inc.
+license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
 

@@ -1,10 +1,10 @@
 ## `refurb`
 
-Refurb is a library for building PostgreSQL database migration software. Over the course of developing a database-backed software product in a team, you'll want to make organized udpates to the database's schema and data that can be automatically reproduced in other environments. Refurb implements this process for Haskell projects in a fairly straightforward way, where individual changes to the database are applied in order by Haskell actions you make and check in with your code as usual.
+Refurb is a library for building PostgreSQL database migration software. Over the course of developing a database-backed software product in a team, you'll want to make organized updates to the database's schema and data that can be automatically reproduced in other environments. Refurb implements this process for Haskell projects in a fairly straightforward way, where individual changes to the database are applied in order by Haskell actions you make and check in with your code as usual.
 
 ### Quick tour
 
-`refurb` is a library whose primary public interface is `Refurb.refurbMain` and is intended to implement a command-line tool, much like `Setup.hs` uses Cabal (the library) to implement the build system or `test/Main.hs` might use `hspec`. You pass a list of `Migration`s to `refurbMain` along with a way to obtain the database connection parameters, and the library will take care of creating and maintaining an in-database list of applied migrations and providing a CLI for users to apply migrations, query applied migrations, and make backups.
+`refurb` is a library whose primary public interface is `Refurb.refurbMain` and is intended to implement a command-line tool, much like `Setup.hs` uses `defaultMain` from Cabal (the library) to implement the build system or `test/Main.hs` might use `hspec`. You pass a list of `Migration`s to `refurbMain` along with a way to obtain the database connection parameters, and the library will take care of creating and maintaining an in-database list of applied migrations and providing a CLI for users to apply migrations, query applied migrations, and make backups.
 
 A `Migration` is a small structure with:
 
@@ -13,7 +13,7 @@ A `Migration` is a small structure with:
 * An execution action of the type `MonadMigration m => m ()` which is invoked to apply the actual change, e.g. issue some `create table` statements.
 * An optional check action of the type `MonadMigration m => Maybe (m ())` which is invokved prior to the execution action to check preconditions. It can signal errors (much as the execution action can) to abort the migration from being executed and is present purely to help you organize your code. It's run just like the execution action is, if present.
 
-A working example is located in the `example/` directory. It's not a complete project as in a normal project you'd have your own product code, usually as the library component of your build, with an executable component to run it. You might also have one or more test suites.
+A working example is located in the `example/` directory. It's not a complete worked example project, as in a normal project you'd have your own product code as well as the migration related code presented in the example.
 
 ### Using refurb in your project
 
@@ -107,10 +107,13 @@ As an extra check to make it hard to accidentally apply seed data migrations to 
 Migration actions are Haskell actions of the type `MonadMigration m => m ()`. `MonadMigration` is defined this way (with `ConstraintKinds`):
 
 ```haskell
-type MonadMigration m = (MonadBaseControl IO m, MonadMask m, MonadReader PG.Connection m, MonadLogger m)
+type MonadMigration m =
+  ( MonadBaseControl IO m       -- access to underlying IO
+  , MonadMask m                 -- can use bracket and friends
+  , MonadReader PG.Connection m -- can ask for a connection to the DB
+  , MonadLogger m               -- can log using monad-logger
+  )
 ```
-
-That is, a migration action is an action in some monad `m` with access to underlying IO, ability to mask exceptions, access a connection to the database, and log messages using `monad-logger`.
 
 The database connection is of type `PG.Connection` with `PG` being `Database.PostgreSQL.Simple` from [`postgresql-simple`](https://github.com/lpsmith/postgresql-simple). So at its most basic a migration action could use that connection straightforwardly:
 

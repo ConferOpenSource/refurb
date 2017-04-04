@@ -23,5 +23,5 @@ mkDerivation {
   ];
   homepage = "https://github.com/ConferHealth/refurb#readme";
   description = "Tools for maintaining a database";
-  license = stdenv.lib.licenses.unfree;
+  license = stdenv.lib.licenses.bsd3;
 }

@@ -3,9 +3,10 @@ version:             0.2.1.0
 synopsis:            Tools for maintaining a database
 description:         Tools for maintaining a database
 homepage:            https://github.com/ConferHealth/refurb#readme
-maintainer:          it@confer.care
-copyright:           2017 Confer Health, Inc.
+license:             BSD3
 category:            Database
+maintainer:          oss@confer.care
+copyright:           2017 Confer Health, Inc.
 
 default-extensions:
   - Arrows

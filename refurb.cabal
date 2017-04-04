@@ -18,7 +18,7 @@ library
   hs-source-dirs:
       src
   default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
-  ghc-options: -Wall -Werror -O2
+  ghc-options: -Wall -O2
   build-depends:
       base >= 4.7 && < 5
     , Frames
@@ -60,7 +60,7 @@ test-suite refurb-test
   hs-source-dirs:
       test
   default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
-  ghc-options: -Wall -Werror -O2 -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
+  ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
   build-depends:
       base >= 4.7 && < 5
     , Frames

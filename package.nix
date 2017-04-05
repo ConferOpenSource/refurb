@@ -1,23 +1,22 @@
 { mkDerivation, ansi-wl-pprint, base, bytestring, classy-prelude
-, composite-base, composite-opaleye, dlist, fast-logger, Frames
-, hspec, lens, monad-logger, old-locale, opaleye
-, optparse-applicative, postgresql-simple, process
-, product-profunctors, stdenv, template-haskell, text, these, thyme
-, vector-space
+, composite-base, composite-opaleye, dlist, fast-logger, hspec
+, lens, monad-logger, old-locale, opaleye, optparse-applicative
+, postgresql-simple, process, product-profunctors, stdenv
+, template-haskell, text, these, thyme, vector-space
 }:
 mkDerivation {
   pname = "refurb";
-  version = "0.2.1.0";
+  version = "0.2.2.0";
   src = ./.;
   libraryHaskellDepends = [
     ansi-wl-pprint base bytestring classy-prelude composite-base
-    composite-opaleye dlist fast-logger Frames lens monad-logger
-    old-locale opaleye optparse-applicative postgresql-simple process
+    composite-opaleye dlist fast-logger lens monad-logger old-locale
+    opaleye optparse-applicative postgresql-simple process
     product-profunctors template-haskell text these thyme vector-space
   ];
   testHaskellDepends = [
     ansi-wl-pprint base bytestring classy-prelude composite-base
-    composite-opaleye dlist fast-logger Frames hspec lens monad-logger
+    composite-opaleye dlist fast-logger hspec lens monad-logger
     old-locale opaleye optparse-applicative postgresql-simple process
     product-profunctors template-haskell text these thyme vector-space
   ];

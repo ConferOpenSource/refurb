@@ -1,5 +1,11 @@
 
-.PHONY: update-build refurb.cabal
+.PHONY: build clean update-build refurb.cabal
+
+build: update-build
+	stack test
+
+clean:
+	stack clean
 
 update-build: package.nix
 

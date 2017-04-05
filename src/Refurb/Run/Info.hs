@@ -1,14 +1,13 @@
 module Refurb.Run.Info where
 
 import ClassyPrelude
-import Composite.Base ()
+import Composite.Record (Record)
 import Control.Arrow (returnA)
 import Control.Lens (Getting, _Wrapped, each, preview, to, view)
 import Data.Monoid (First)
 import Data.These (These(This, That, These), there)
 import Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import Data.Thyme.Format.Human (humanTimeDiff)
-import Frames (Record)
 import Opaleye ((.==), constant, restrict)
 import Refurb.Run.Internal (MonadRefurb, contextDbConn, contextMigrations, optionallyColoredM, migrationResultDoc)
 import Refurb.Store (FQualifiedKey, MigrationLog, cQualifiedKey, fId, fApplied, fDuration, fOutput, fResult, fQualifiedKey, readMigrationStatus)

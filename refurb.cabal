@@ -3,7 +3,7 @@
 -- see: https://github.com/sol/hpack
 
 name:           refurb
-version:        0.2.1.0
+version:        0.2.2.0
 synopsis:       Tools for maintaining a database
 description:    Tools for maintaining a database
 category:       Database
@@ -22,7 +22,6 @@ library
   ghc-options: -Wall -O2
   build-depends:
       base >= 4.7 && < 5
-    , Frames
     , ansi-wl-pprint
     , bytestring
     , classy-prelude
@@ -64,7 +63,6 @@ test-suite refurb-test
   ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
   build-depends:
       base >= 4.7 && < 5
-    , Frames
     , ansi-wl-pprint
     , bytestring
     , classy-prelude

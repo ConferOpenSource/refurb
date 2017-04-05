@@ -2,7 +2,7 @@
 module Refurb.Cli where
 
 import ClassyPrelude
-import Frames ((:->)(Col))
+import Composite.Record ((:->)(Val))
 import qualified Options.Applicative as OA
 import Refurb.Store (FQualifiedKey)
 
@@ -71,7 +71,7 @@ commandShowMigrationParser =
   OA.info
     (
       CommandShowMigration
-        <$> (Col . pack <$> OA.strArgument (OA.metavar "MIGRATION-KEY"))
+        <$> (Val . pack <$> OA.strArgument (OA.metavar "MIGRATION-KEY"))
     )
     ( OA.progDesc "Show status of and log details for a particular migration" )
 

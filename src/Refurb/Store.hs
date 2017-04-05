@@ -4,13 +4,13 @@ module Refurb.Store where
 import ClassyPrelude
 import Composite.Opaleye (defaultRecTable)
 import Composite.Opaleye.TH (deriveOpaleyeEnum)
+import Composite.Record ((:->), Record)
 import Composite.TH (withLensesAndProxies)
 import Control.Arrow (returnA)
 import Control.Lens (view)
 import Control.Monad.Logger (MonadLogger, logDebug)
 import Data.These (These(This, These, That))
 import qualified Database.PostgreSQL.Simple as PG
-import Frames ((:->), Record)
 import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), asc, orderBy, queryTable, runQuery)
 import Refurb.MigrationUtils (doesTableExist, qqSqls)
 import Refurb.Types (Migration, migrationQualifiedKey)

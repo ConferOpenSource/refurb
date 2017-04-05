@@ -1,6 +1,7 @@
 module Refurb.Run.Migrate where
 
 import ClassyPrelude hiding ((</>), defaultTimeLocale, getCurrentTime, formatTime)
+import Composite.Record (Record, pattern (:*:), pattern RNil)
 import Control.Arrow (returnA)
 import Control.Monad.Logger (askLoggerIO, runLoggingT)
 import Control.Lens (each, toListOf, view)
@@ -13,7 +14,6 @@ import Data.Thyme.Format.Human (humanTimeDiff)
 import Data.Thyme.Time.Core (fromThyme)
 import qualified Database.PostgreSQL.Simple as PG
 import qualified Database.PostgreSQL.Simple.Types as PG
-import Frames (Record, (&:), pattern Nil)
 import Language.Haskell.TH (Loc, loc_package, loc_module, loc_filename, loc_start)
 import Opaleye (constant, runInsertMany)
 import Refurb.Cli (GoNoGo(GoNoGo), PreMigrationBackup(PreMigrationBackup), InstallSeedData(InstallSeedData))
@@ -92,7 +92,7 @@ applyMigrations migrations = do
 
           void . liftIO $ PG.execute_ dbConn "set search_path = 'public'"
           liftIO . runInsertMany dbConn migrationLog . singleton . (constant :: Record MigrationLogW -> Record MigrationLogColsW) $
-            Nothing &: migrationQualifiedKey migration &: fromThyme start &: output &: result &: (toSeconds :: NominalDiffTime -> Double) duration &: Nil
+            Nothing :*: migrationQualifiedKey migration :*: fromThyme start :*: output :*: result :*: (toSeconds :: NominalDiffTime -> Double) duration :*: RNil
 
     onException
       ( do

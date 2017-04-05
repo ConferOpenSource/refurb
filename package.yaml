@@ -1,5 +1,5 @@
 name:                refurb
-version:             0.2.1.0
+version:             0.2.2.0
 synopsis:            Tools for maintaining a database
 description:         Tools for maintaining a database
 homepage:            https://github.com/ConferHealth/refurb#readme
@@ -36,7 +36,6 @@ default-extensions:
 
 dependencies:
   - base >= 4.7 && < 5
-  - Frames
   - ansi-wl-pprint
   - bytestring
   - classy-prelude

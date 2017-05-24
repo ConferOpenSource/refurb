@@ -3,8 +3,12 @@ packages:
   - .
   - example
 extra-deps:
-  - composite-base-0.3.0.0
-  - composite-opaleye-0.3.0.0
+  - composite-base-0.3.1.0
+  - composite-opaleye-0.3.1.0
 flags: {}
 extra-package-dbs: []
-
+# nix:
+#   enable: true
+#   packages:
+#     - postgresql
+#     - zlib

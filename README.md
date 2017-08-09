@@ -217,11 +217,15 @@ One issue with using Haskell migration actions is that over time the migrations 
 
 Suggestions and contributions welcome to assist with various strategies here.
 
+## Maturity
+
+As of writing, we use this library in our Haskell project which employs a database and have had no major issues. We have not yet released to production and have not gone through a series of releases, so improvements in the long term use might still be due.  We'd appreciate any fixes, improvements, or experience reports.
+
 ## Contributing
 
 Contributions and feedback welcome! File and issue or make a PR.
 
 ## Chat
 
-Asa (@asa) and Ross (@dridus) hang out on [fpchat](https://fpchat.com).
+Asa (@asa) and Ross (@dridus) lurk on [fpchat](https://fpchat.com). You can also reach us at `oss@confer.health`.
 

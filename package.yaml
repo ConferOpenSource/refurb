@@ -5,7 +5,7 @@ description:         Tools for maintaining a database
 homepage:            https://github.com/ConferHealth/refurb#readme
 license:             BSD3
 category:            Database
-maintainer:          oss@confer.care
+maintainer:          oss@confer.health
 copyright:           2017 Confer Health, Inc.
 
 default-extensions:

@@ -162,3 +162,8 @@ doesSchemaExist schema =
 doesTableExist :: MonadMigration m => Text -> Text -> m Bool
 doesTableExist schema table =
   not . (null :: [PG.Only Int] -> Bool) <$> query "select 1 from information_schema.tables where table_schema = ? and table_name = ?" (schema, table)
+
+-- |Check if a column exists in a schema on a table using the @information_schema@ views.
+doesColumnExist :: MonadMigration m => Text -> Text -> Text -> m Bool
+doesColumnExist schema table column =
+  not . (null :: [PG.Only Int] -> Bool) <$> query "select 1 from information_schema.columns where table_schema = ? and table_name = ? and column_name = ?" (schema, table, column)

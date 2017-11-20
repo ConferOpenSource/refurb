@@ -1,10 +1,10 @@
-resolver: lts-8.6
+resolver: lts-9.13
 packages:
   - .
   - example
 extra-deps:
-  - composite-base-0.3.1.0
-  - composite-opaleye-0.3.1.0
+  - composite-base-0.5.3.0
+  - composite-opaleye-0.5.3.0
 flags: {}
 extra-package-dbs: []
 # nix:

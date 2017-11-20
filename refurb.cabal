@@ -1,4 +1,4 @@
--- This file has been generated from package.yaml by hpack version 0.18.1.
+-- This file has been generated from package.yaml by hpack version 0.19.3.
 --
 -- see: https://github.com/sol/hpack
 
@@ -21,8 +21,8 @@ library
   default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
   ghc-options: -Wall -O2
   build-depends:
-      base >= 4.7 && < 5
-    , ansi-wl-pprint
+      ansi-wl-pprint
+    , base >=4.7 && <5
     , bytestring
     , classy-prelude
     , composite-base
@@ -64,14 +64,15 @@ test-suite refurb-test
   default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
   ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
   build-depends:
-      base >= 4.7 && < 5
-    , ansi-wl-pprint
+      ansi-wl-pprint
+    , base >=4.7 && <5
     , bytestring
     , classy-prelude
     , composite-base
     , composite-opaleye
     , dlist
     , fast-logger
+    , hspec
     , lens
     , monad-logger
     , old-locale
@@ -80,13 +81,13 @@ test-suite refurb-test
     , postgresql-simple
     , process
     , product-profunctors
+    , refurb
     , template-haskell
     , text
     , these
     , thyme
     , vector-space
-    , refurb
-    , hspec
   other-modules:
       MigrationUtilsSpec
+      Paths_refurb
   default-language: Haskell2010

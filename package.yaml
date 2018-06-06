@@ -42,8 +42,10 @@ dependencies:
   - composite-base
   - composite-opaleye
   - dlist
+  - exceptions
   - fast-logger
   - lens
+  - monad-control
   - monad-logger
   - old-locale
   - opaleye
@@ -51,6 +53,7 @@ dependencies:
   - postgresql-simple
   - process
   - product-profunctors
+  - transformers-base
   - template-haskell
   - text
   - these
@@ -72,4 +75,3 @@ tests:
     dependencies:
       - refurb
       - hspec
-

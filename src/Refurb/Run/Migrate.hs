@@ -3,6 +3,7 @@ module Refurb.Run.Migrate where
 import ClassyPrelude hiding ((</>), defaultTimeLocale, getCurrentTime, formatTime)
 import Composite.Record (Record, pattern (:*:), pattern RNil)
 import Control.Arrow (returnA)
+import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (askLoggerIO, runLoggingT)
 import Control.Lens (each, toListOf, view)
 import Data.AffineSpace ((.-.))
@@ -33,7 +34,7 @@ migrationPrefixDoc migration = white (text . unpack . migrationQualifiedKey $ mi
 
 -- |Implement the @migrate@ command by verifying that seed data is only applied to non-production databases, reading the migration status, and determining
 -- from that status which migrations to apply. If the user requested execution of migrations, delegate to 'applyMigrations' to actually do the work.
-migrate :: MonadRefurb m => GoNoGo -> Maybe PreMigrationBackup -> InstallSeedData -> m ()
+migrate :: (MonadUnliftIO m, MonadRefurb m) => GoNoGo -> Maybe PreMigrationBackup -> InstallSeedData -> m ()
 migrate (GoNoGo isGo) backupMay (InstallSeedData shouldInstallSeedData) = do
   disp <- optionallyColoredM
   dbConn <- asks contextDbConn
@@ -58,7 +59,7 @@ migrate (GoNoGo isGo) backupMay (InstallSeedData shouldInstallSeedData) = do
 
 -- |Given a pre-vetted list of 'Migration' structures to apply to the database, iterate through them and run their check actions (if any) followed by
 -- execution actions with log output captured.
-applyMigrations :: MonadRefurb m => [Migration] -> m ()
+applyMigrations :: (MonadUnliftIO m, MonadRefurb m) => [Migration] -> m ()
 applyMigrations migrations = do
   disp <- optionallyColoredM
   dbConn <- asks contextDbConn
@@ -119,4 +120,3 @@ nowLogString :: IO LogStr
 nowLogString = do
   now <- getCurrentTime
   pure . toLogStr $ formatTime defaultTimeLocale "%Y-%m-%d %T%Q" now
-

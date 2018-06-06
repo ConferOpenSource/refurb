@@ -2,7 +2,10 @@
 module Refurb.Run.Internal where
 
 import ClassyPrelude
+import Control.Monad.Base (liftBase)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Logger (MonadLogger, MonadLoggerIO)
+import Control.Monad.Trans.Control (MonadBaseControl)
 import qualified Database.PostgreSQL.Simple as PG
 import Refurb.Cli (Opts, colorize)
 import Refurb.Store (MigrationResult(MigrationSuccess, MigrationFailure))
@@ -44,4 +47,3 @@ migrationResultDoc :: MigrationResult -> Doc
 migrationResultDoc = \ case
   MigrationSuccess -> green (text "success")
   MigrationFailure -> red   (text "failure")
-

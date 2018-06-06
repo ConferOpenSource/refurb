@@ -6,6 +6,7 @@ module Refurb
   ) where
 
 import ClassyPrelude
+import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (LogLevel(LevelDebug), filterLogger, logDebug, runStdoutLoggingT)
 import qualified Database.PostgreSQL.Simple as PG
 import qualified Options.Applicative as OA

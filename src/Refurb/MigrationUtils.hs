@@ -2,6 +2,7 @@
 module Refurb.MigrationUtils where
 
 import ClassyPrelude
+import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (logDebug)
 import Data.Profunctor.Product.Default (Default)
 import qualified Data.Text as T

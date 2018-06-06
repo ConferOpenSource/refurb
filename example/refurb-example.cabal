@@ -1,6 +1,8 @@
--- This file has been generated from package.yaml by hpack version 0.15.0.
+-- This file has been generated from package.yaml by hpack version 0.20.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: ba79d1ba77bb845b6ebcc3f7b31def0869a687c379bb2dd7102481fe78fbf9ed
 
 name:           refurb-example
 version:        0.1.0.0
@@ -18,8 +20,10 @@ executable refurb-example-exe
   default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
   ghc-options: -Wall -Werror -O2
   build-depends:
-      base >= 4.7 && < 5
+      base >=4.7 && <5
     , classy-prelude
     , postgresql-simple
     , refurb
+  other-modules:
+      Paths_refurb_example
   default-language: Haskell2010

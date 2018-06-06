@@ -1,8 +1,9 @@
 { mkDerivation, ansi-wl-pprint, base, bytestring, classy-prelude
-, composite-base, composite-opaleye, dlist, fast-logger, hspec
-, lens, monad-logger, old-locale, opaleye, optparse-applicative
-, postgresql-simple, process, product-profunctors, stdenv
-, template-haskell, text, these, thyme, vector-space
+, composite-base, composite-opaleye, dlist, exceptions, fast-logger
+, hspec, lens, monad-control, monad-logger, old-locale, opaleye
+, optparse-applicative, postgresql-simple, process
+, product-profunctors, stdenv, template-haskell, text, these, thyme
+, transformers-base, vector-space
 }:
 mkDerivation {
   pname = "refurb";
@@ -10,15 +11,17 @@ mkDerivation {
   src = ./.;
   libraryHaskellDepends = [
     ansi-wl-pprint base bytestring classy-prelude composite-base
-    composite-opaleye dlist fast-logger lens monad-logger old-locale
-    opaleye optparse-applicative postgresql-simple process
-    product-profunctors template-haskell text these thyme vector-space
+    composite-opaleye dlist exceptions fast-logger lens monad-control
+    monad-logger old-locale opaleye optparse-applicative
+    postgresql-simple process product-profunctors template-haskell text
+    these thyme transformers-base vector-space
   ];
   testHaskellDepends = [
     ansi-wl-pprint base bytestring classy-prelude composite-base
-    composite-opaleye dlist fast-logger hspec lens monad-logger
-    old-locale opaleye optparse-applicative postgresql-simple process
-    product-profunctors template-haskell text these thyme vector-space
+    composite-opaleye dlist exceptions fast-logger hspec lens
+    monad-control monad-logger old-locale opaleye optparse-applicative
+    postgresql-simple process product-profunctors template-haskell text
+    these thyme transformers-base vector-space
   ];
   homepage = "https://github.com/ConferHealth/refurb#readme";
   description = "Tools for maintaining a database";

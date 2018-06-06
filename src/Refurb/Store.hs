@@ -8,7 +8,10 @@ import Composite.Record ((:->), Record)
 import Composite.TH (withLensesAndProxies)
 import Control.Arrow (returnA)
 import Control.Lens (view)
+import Control.Monad.Base (liftBase)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Logger (MonadLogger, logDebug)
+import Control.Monad.Trans.Control (MonadBaseControl)
 import Data.These (These(This, These, That))
 import qualified Database.PostgreSQL.Simple as PG
 import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), asc, orderBy, queryTable, runQuery)
@@ -135,4 +138,3 @@ readMigrationStatus conn migrations restriction = do
       (aligned, extra) = foldr alignMigration ([], migrationLogByKey) migrations
 
   pure $ map That (toList extra) ++ aligned
-

@@ -1,6 +1,8 @@
--- This file has been generated from package.yaml by hpack version 0.19.3.
+-- This file has been generated from package.yaml by hpack version 0.27.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 5e6dfcedb4fdfca00a22116b8206faa1b3d265836f82b6272c7081837c755643
 
 name:           refurb
 version:        0.2.2.0
@@ -28,8 +30,10 @@ library
     , composite-base
     , composite-opaleye
     , dlist
+    , exceptions
     , fast-logger
     , lens
+    , monad-control
     , monad-logger
     , old-locale
     , opaleye
@@ -41,6 +45,7 @@ library
     , text
     , these
     , thyme
+    , transformers-base
     , vector-space
   exposed-modules:
       Refurb
@@ -71,9 +76,11 @@ test-suite refurb-test
     , composite-base
     , composite-opaleye
     , dlist
+    , exceptions
     , fast-logger
     , hspec
     , lens
+    , monad-control
     , monad-logger
     , old-locale
     , opaleye
@@ -86,6 +93,7 @@ test-suite refurb-test
     , text
     , these
     , thyme
+    , transformers-base
     , vector-space
   other-modules:
       MigrationUtilsSpec

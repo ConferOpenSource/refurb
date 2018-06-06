@@ -10,7 +10,9 @@ module Refurb.Types
 
 import ClassyPrelude
 import Control.Lens.TH (makeLenses)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Logger (MonadLogger)
+import Control.Monad.Trans.Control (MonadBaseControl)
 import qualified Data.ByteString.Char8 as BSC8
 import Data.Word (Word16)
 import qualified Database.PostgreSQL.Simple as PG

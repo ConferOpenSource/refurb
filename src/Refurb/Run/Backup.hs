@@ -1,6 +1,7 @@
 module Refurb.Run.Backup where
 
 import ClassyPrelude
+import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (logInfo, logError)
 import Refurb.Run.Internal (MonadRefurb, contextDbConnInfo)
 import Refurb.Types (ConnInfo(ConnInfo), connDbName, connUser, connHost, connPort, connPassword)

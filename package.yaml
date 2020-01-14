@@ -1,12 +1,12 @@
 name:                refurb
-version:             0.2.2.0
+version:             0.2.3.0
 synopsis:            Tools for maintaining a database
 description:         Tools for maintaining a database
-homepage:            https://github.com/ConferHealth/refurb#readme
+homepage:            https://github.com/ConferOpenSource/refurb#readme
 license:             BSD3
 category:            Database
-maintainer:          oss@confer.health
-copyright:           2017 Confer Health, Inc.
+maintainer:          oss@vitalbio.com
+copyright:           2017 Confer Health, Inc., 2020 Vital Biosciences
 
 dependencies:
   - base >= 4.7 && < 5

@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 335b1ecb93c835b85d118cd82aa724db8b1dc3934e03b2db37192d6c66b0d883
+-- hash: 303cc00ec1aa1ac86c703c9836382d92da8bacf61b4c4bbb124b5ba6f9343df8
 
 name:           refurb
-version:        0.2.2.0
+version:        0.2.3.0
 synopsis:       Tools for maintaining a database
 description:    Tools for maintaining a database
 category:       Database
-homepage:       https://github.com/ConferHealth/refurb#readme
-maintainer:     oss@confer.health
-copyright:      2017 Confer Health, Inc.
+homepage:       https://github.com/ConferOpenSource/refurb#readme
+maintainer:     oss@vitalbio.com
+copyright:      2017 Confer Health, Inc., 2020 Vital Biosciences
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

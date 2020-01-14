@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.20.0.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ba79d1ba77bb845b6ebcc3f7b31def0869a687c379bb2dd7102481fe78fbf9ed
+-- hash: 2217384c8abec3d42e2b9cbb976793a54c9e13f9a458c1d19b3ed62fbdae316c
 
 name:           refurb-example
 version:        0.1.0.0
@@ -13,7 +15,6 @@ homepage:       https://github.com/ConferHealth/refurb#readme
 maintainer:     it@confer.care
 copyright:      2017 Confer Health, Inc.
 build-type:     Simple
-cabal-version:  >= 1.10
 
 executable refurb-example-exe
   main-is: Main.hs

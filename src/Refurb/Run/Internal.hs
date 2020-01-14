@@ -1,3 +1,8 @@
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 -- |Module containing shared types and functions used for implementing the various commands.
 module Refurb.Run.Internal where
 

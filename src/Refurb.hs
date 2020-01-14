@@ -1,3 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 -- |Top level module of Refurb along which re-exports the library portion of Refurb ('Refurb.Types' and 'Refurb.MigrationUtils')
 module Refurb
   ( refurbMain

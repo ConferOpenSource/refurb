@@ -1,3 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Refurb.Run.Backup where
 
 import ClassyPrelude

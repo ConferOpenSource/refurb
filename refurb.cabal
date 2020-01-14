@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.27.0.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5e6dfcedb4fdfca00a22116b8206faa1b3d265836f82b6272c7081837c755643
+-- hash: 335b1ecb93c835b85d118cd82aa724db8b1dc3934e03b2db37192d6c66b0d883
 
 name:           refurb
 version:        0.2.2.0
@@ -15,12 +17,10 @@ copyright:      2017 Confer Health, Inc.
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 
 library
   hs-source-dirs:
       src
-  default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
   ghc-options: -Wall -O2
   build-depends:
       ansi-wl-pprint
@@ -44,6 +44,7 @@ library
     , template-haskell
     , text
     , these
+    , these-lens
     , thyme
     , transformers-base
     , vector-space
@@ -66,7 +67,6 @@ test-suite refurb-test
   main-is: Main.hs
   hs-source-dirs:
       test
-  default-extensions: Arrows ConstraintKinds DataKinds DeriveGeneric FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings PatternSynonyms QuasiQuotes RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TemplateHaskell TypeApplications TypeFamilies TypeOperators ViewPatterns
   ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N -fno-warn-orphans
   build-depends:
       ansi-wl-pprint
@@ -92,6 +92,7 @@ test-suite refurb-test
     , template-haskell
     , text
     , these
+    , these-lens
     , thyme
     , transformers-base
     , vector-space

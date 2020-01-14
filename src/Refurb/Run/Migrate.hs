@@ -1,3 +1,9 @@
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PatternSynonyms #-}
 module Refurb.Run.Migrate where
 
 import ClassyPrelude hiding ((</>), defaultTimeLocale, getCurrentTime, formatTime)
@@ -8,7 +14,11 @@ import Control.Monad.Logger (askLoggerIO, runLoggingT)
 import Control.Lens (each, toListOf, view)
 import Data.AffineSpace ((.-.))
 import qualified Data.DList as DL
+#if MIN_VERSION_these(1,0,0)
+import Data.These.Lens (_This)
+#else
 import Data.These (_This)
+#endif
 import Data.Thyme.Clock (NominalDiffTime, getCurrentTime, toSeconds)
 import Data.Thyme.Format (formatTime)
 import Data.Thyme.Format.Human (humanTimeDiff)

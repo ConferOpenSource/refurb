@@ -1,3 +1,8 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ViewPatterns #-}
 -- |Utilities for writing migrations.
 module Refurb.MigrationUtils where
 

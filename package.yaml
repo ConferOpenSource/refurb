@@ -8,32 +8,6 @@ category:            Database
 maintainer:          oss@confer.health
 copyright:           2017 Confer Health, Inc.
 
-default-extensions:
-  - Arrows
-  - ConstraintKinds
-  - DataKinds
-  - DeriveGeneric
-  - FlexibleContexts
-  - FlexibleInstances
-  - GADTs
-  - GeneralizedNewtypeDeriving
-  - LambdaCase
-  - MultiParamTypeClasses
-  - NamedFieldPuns
-  - NoImplicitPrelude
-  - OverloadedStrings
-  - PatternSynonyms
-  - QuasiQuotes
-  - RankNTypes
-  - RecordWildCards
-  - ScopedTypeVariables
-  - StandaloneDeriving
-  - TemplateHaskell
-  - TypeApplications
-  - TypeFamilies
-  - TypeOperators
-  - ViewPatterns
-
 dependencies:
   - base >= 4.7 && < 5
   - ansi-wl-pprint
@@ -57,6 +31,7 @@ dependencies:
   - template-haskell
   - text
   - these
+  - these-lens
   - thyme
   - vector-space
 

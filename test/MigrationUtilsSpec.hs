@@ -1,3 +1,6 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 module MigrationUtilsSpec where
 
 import ClassyPrelude

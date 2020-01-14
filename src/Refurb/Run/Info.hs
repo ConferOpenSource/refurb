@@ -1,3 +1,10 @@
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ViewPatterns #-}
 module Refurb.Run.Info where
 
 import ClassyPrelude
@@ -5,7 +12,12 @@ import Composite.Record (Record)
 import Control.Arrow (returnA)
 import Control.Lens (Getting, _Wrapped, each, preview, to, view)
 import Data.Monoid (First)
+#if MIN_VERSION_these(1,0,0)
+import Data.These (These(This, That, These))
+import Data.These.Lens (there)
+#else
 import Data.These (These(This, That, These), there)
+#endif
 import Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import Data.Thyme.Format.Human (humanTimeDiff)
 import Opaleye ((.==), constant, restrict)

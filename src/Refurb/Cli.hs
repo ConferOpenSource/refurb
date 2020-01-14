@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 -- |Module with @optparse-applicative@ parsers for and datatypes to represent the command line arguments.
 module Refurb.Cli where
 

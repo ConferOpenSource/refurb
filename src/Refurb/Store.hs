@@ -35,7 +35,7 @@ data MigrationResult
   | MigrationFailure
   deriving (Eq, Show)
 
-deriveOpaleyeEnum ''MigrationResult "migration_result_enum" (stripPrefix "migration" . toLower)
+deriveOpaleyeEnum ''MigrationResult "refurb.migration_result_enum" (stripPrefix "migration" . toLower)
 
 withLensesAndProxies [d|
   type FId           = "id"            :-> Int32

@@ -5,20 +5,6 @@
 
 packages:
 - completed:
-    hackage: composite-base-0.6.0.0@sha256:73e4ccf67273f38c7a62533d1bd5655502c13edb267c5d8b6a2acede1f69463d,2869
-    pantry-tree:
-      size: 604
-      sha256: 0f057fee1dc54c24d0b54557e4d9be02921ea3945e09e4ac5ae1cc82e74f7643
-  original:
-    hackage: composite-base-0.6.0.0
-- completed:
-    hackage: composite-opaleye-0.6.0.0@sha256:ebe2a20f40a5266630fa5a9b8050a8ad2dcbd653e264a0a9f5b02c2d40713129,2650
-    pantry-tree:
-      size: 659
-      sha256: 747fc76e7fa4ffdf45e513d5422626939997aaf680665ba16ce24a176b016003
-  original:
-    hackage: composite-opaleye-0.6.0.0
-- completed:
     hackage: these-lens-1@sha256:960f53c44201f5f67d0158162ce39cc7095b958d584d76a2aead358a54c137d3,1138
     pantry-tree:
       size: 222

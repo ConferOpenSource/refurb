@@ -25,7 +25,7 @@ import Control.Monad.Logger (MonadLogger, logDebug)
 import Control.Monad.Trans.Control (MonadBaseControl)
 import Data.These (These(This, These, That))
 import qualified Database.PostgreSQL.Simple as PG
-import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), asc, orderBy, queryTable, runQuery)
+import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), ToFields(ToFields), asc, orderBy, queryTable, runQuery)
 import Refurb.MigrationUtils (doesTableExist, qqSqls)
 import Refurb.Types (Migration, migrationQualifiedKey)
 

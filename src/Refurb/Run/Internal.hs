@@ -7,6 +7,7 @@
 module Refurb.Run.Internal where
 
 import ClassyPrelude
+import Control.Monad (MonadFail)
 import Control.Monad.Base (liftBase)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Logger (MonadLogger, MonadLoggerIO)
@@ -30,7 +31,7 @@ data Context = Context
   }
 
 -- |Constraint of actions for command execution, including access to the 'Context', logging, and underlying IO.
-type MonadRefurb m = (MonadBaseControl IO m, MonadMask m, MonadReader Context m, MonadLogger m, MonadLoggerIO m)
+type MonadRefurb m = (MonadBaseControl IO m, MonadFail m, MonadMask m, MonadReader Context m, MonadLogger m, MonadLoggerIO m)
 
 -- |Given the configuration implicitly available to 'MonadRefurb', produce a function which possibly strips ANSI colorization from a 'Doc' if the user
 -- requested colorless output.

@@ -20,7 +20,7 @@ import Data.These (These(This, That, These), there)
 #endif
 import Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import Data.Thyme.Format.Human (humanTimeDiff)
-import Opaleye ((.==), constant, restrict)
+import Opaleye ((.==), restrict, toFields)
 import Refurb.Run.Internal (MonadRefurb, contextDbConn, contextMigrations, optionallyColoredM, migrationResultDoc)
 import Refurb.Store (FQualifiedKey, MigrationLog, cQualifiedKey, fId, fApplied, fDuration, fOutput, fResult, fQualifiedKey, readMigrationStatus)
 import Refurb.Types (Migration, MigrationType(MigrationSeedData), migrationQualifiedKey, migrationType)
@@ -74,11 +74,10 @@ showMigration (view _Wrapped -> key) = do
   dbConn <- asks contextDbConn
   migrations <- asks $ filter ((== key) . migrationQualifiedKey) . contextMigrations
   migrationStatus <- readMigrationStatus dbConn migrations $ proc mlog ->
-    restrict -< view cQualifiedKey mlog .== constant key
+    restrict -< view cQualifiedKey mlog .== toFields key
 
   showMigrationStatus migrationStatus
   putStrLn ""
   case preview (each . there) migrationStatus of
     Nothing   -> disp . black $ "Never been run." -- n.b.: black is not black
     Just mlog -> putStrLn . view fOutput $ mlog
-

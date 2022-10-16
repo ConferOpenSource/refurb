@@ -26,7 +26,7 @@ import Data.Thyme.Time.Core (fromThyme)
 import qualified Database.PostgreSQL.Simple as PG
 import qualified Database.PostgreSQL.Simple.Types as PG
 import Language.Haskell.TH (Loc, loc_package, loc_module, loc_filename, loc_start)
-import Opaleye (constant, runInsertMany)
+import Opaleye (Insert (Insert), rCount, runInsert, toFields)
 import Refurb.Cli (GoNoGo(GoNoGo), PreMigrationBackup(PreMigrationBackup), InstallSeedData(InstallSeedData))
 import Refurb.MigrationUtils (doesSchemaExist)
 import Refurb.Run.Backup (backup)
@@ -102,7 +102,7 @@ applyMigrations migrations = do
                                    putStrLn output
 
           void . liftIO $ PG.execute_ dbConn "set search_path = 'public'"
-          liftIO . runInsertMany dbConn migrationLog . singleton . (constant :: Record MigrationLogW -> Record MigrationLogColsW) $
+          liftIO . runInsert dbConn . (\rows -> Insert migrationLog rows rCount Nothing) . singleton . (toFields :: Record MigrationLogW -> Record MigrationLogColsW) $
             Nothing :*: migrationQualifiedKey migration :*: fromThyme start :*: output :*: result :*: (toSeconds :: NominalDiffTime -> Double) duration :*: RNil
 
     onException

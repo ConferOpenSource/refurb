@@ -25,7 +25,7 @@ import Control.Monad.Logger (MonadLogger, logDebug)
 import Control.Monad.Trans.Control (MonadBaseControl)
 import Data.These (These(This, These, That))
 import qualified Database.PostgreSQL.Simple as PG
-import Opaleye (Column, PGBool, PGInt4, PGFloat8, PGText, PGTimestamptz, QueryArr, Table(TableWithSchema), ToFields(ToFields), asc, orderBy, queryTable, runQuery)
+import Opaleye (Field, SelectArr, SqlBool, SqlInt4, SqlFloat8, SqlText, SqlTimestamptz, Table, asc, orderBy, runSelect, selectTable, tableWithSchema)
 import Refurb.MigrationUtils (doesTableExist, qqSqls)
 import Refurb.Types (Migration, migrationQualifiedKey)
 
@@ -40,21 +40,21 @@ deriveOpaleyeEnum ''MigrationResult "refurb.migration_result_enum" (stripPrefix 
 withLensesAndProxies [d|
   type FId           = "id"            :-> Int32
   type FIdMay        = "id"            :-> Maybe Int32
-  type CId           = "id"            :-> Column PGInt4
-  type CIdMay        = "id"            :-> Maybe (Column PGInt4)
+  type CId           = "id"            :-> Field SqlInt4
+  type CIdMay        = "id"            :-> Maybe (Field SqlInt4)
   type FQualifiedKey = "qualified_key" :-> Text
-  type CQualifiedKey = "qualified_key" :-> Column PGText
+  type CQualifiedKey = "qualified_key" :-> Field SqlText
   type FApplied      = "applied"       :-> UTCTime
-  type CApplied      = "applied"       :-> Column PGTimestamptz
+  type CApplied      = "applied"       :-> Field SqlTimestamptz
   type FOutput       = "output"        :-> Text
-  type COutput       = "output"        :-> Column PGText
+  type COutput       = "output"        :-> Field SqlText
   type FResult       = "result"        :-> MigrationResult
-  type CResult       = "result"        :-> Column PGMigrationResult
+  type CResult       = "result"        :-> Field PGMigrationResult
   type FDuration     = "duration"      :-> Double
-  type CDuration     = "duration"      :-> Column PGFloat8
+  type CDuration     = "duration"      :-> Field SqlFloat8
 
   type FProdSystem = "prod_system" :-> Bool
-  type CProdSystem = "prod_system" :-> Column PGBool
+  type CProdSystem = "prod_system" :-> Field SqlBool
   |]
 
 -- |Fields of a migration log entry in memory fetched from the database (with ID)
@@ -73,11 +73,11 @@ type RefurbConfigCols = '[CProdSystem]
 
 -- |The migration log table which records all executed migrations and their results
 migrationLog :: Table (Record MigrationLogColsW) (Record MigrationLogColsR)
-migrationLog = TableWithSchema "refurb" "migration_log" defaultRecTable
+migrationLog = tableWithSchema "refurb" "migration_log" defaultRecTable
 
 -- |The refurb config table which controls whether this database is considered a production one or not
 refurbConfig :: Table (Record RefurbConfigCols) (Record RefurbConfigCols)
-refurbConfig = TableWithSchema "refurb" "config" defaultRecTable
+refurbConfig = tableWithSchema "refurb" "config" defaultRecTable
 
 -- |Test to see if the schema seems to be installed by looking for an existing refurb_config table
 isSchemaPresent :: (MonadBaseControl IO m, MonadMask m, MonadLogger m) => PG.Connection -> m Bool
@@ -89,8 +89,8 @@ isSchemaPresent conn = do
 isProdSystem :: (MonadBaseControl IO m, MonadLogger m) => PG.Connection -> m Bool
 isProdSystem conn = do
   $logDebug "Checking if this is a prod system"
-  map (fromMaybe False . headMay) . liftBase . runQuery conn $ proc () -> do
-    config <- queryTable refurbConfig -< ()
+  map (fromMaybe False . headMay) . liftBase . runSelect conn $ proc () -> do
+    config <- selectTable refurbConfig -< ()
     returnA -< view cProdSystem config
 
 -- |Create the refurb schema elements. Will fail if they already exist.
@@ -128,12 +128,12 @@ readMigrationStatus
   :: (MonadBaseControl IO m, MonadLogger m)
   => PG.Connection
   -> [Migration]
-  -> QueryArr (Record MigrationLogColsR) ()
+  -> SelectArr (Record MigrationLogColsR) ()
   -> m [These Migration (Record MigrationLog)]
 readMigrationStatus conn migrations restriction = do
   $logDebug "Reading migration status"
-  migrationStatus <- liftBase $ runQuery conn . orderBy (asc $ view cQualifiedKey) $ proc () -> do
-    mlog <- queryTable migrationLog -< ()
+  migrationStatus <- liftBase $ runSelect conn . orderBy (asc $ view cQualifiedKey) $ proc () -> do
+    mlog <- selectTable migrationLog -< ()
     restriction -< mlog
     returnA -< mlog
 

@@ -126,38 +126,38 @@ query_ q = do
   liftBase $ PG.query_ conn q
 
 -- |Run an Opaleye query against the database connection.
--- Wraps 'Opaleye.runQuery' using the 'MonadMigration' reader to get the connection.
+-- Wraps 'Opaleye.runSelect' using the 'MonadMigration' reader to get the connection.
 runQuery
   :: ( MonadMigration m
      , Default Opaleye.Unpackspec columns columns
-     , Default Opaleye.QueryRunner columns haskells
+     , Default Opaleye.FromFields columns haskells
      )
-  => Opaleye.Query columns -> m [haskells]
+  => Opaleye.Select columns -> m [haskells]
 runQuery q = do
   conn <- ask
   for_ (Opaleye.showSql q) ($logDebug . pack)
-  liftBase $ Opaleye.runQuery conn q
+  liftBase $ Opaleye.runSelect conn q
 
--- |Run an Opaleye 'Opaleye.runInsertMany' against the database connection.
+-- |Run an Opaleye 'Opaleye.runInsert' against the database connection.
 runInsertMany :: MonadMigration m => Opaleye.Table columns columns' -> [columns] -> m Int64
 runInsertMany table rows = do
   conn <- ask
   $logDebug $ "inserting " <> tshow (length rows) <> " rows into " <> tshow (tableIdentifier table)
-  liftBase $ Opaleye.runInsertMany conn table rows
+  liftBase $ Opaleye.runInsert conn (Opaleye.Insert table rows Opaleye.rCount Nothing)
 
 -- |Run an Opaleye 'Opaleye.runUpdate' against the database connection.
-runUpdate :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> columnsW) -> (columnsR -> Opaleye.Column Opaleye.PGBool) -> m Int64
+runUpdate :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> columnsW) -> (columnsR -> Opaleye.Field Opaleye.SqlBool) -> m Int64
 runUpdate table permute filt = do
   conn <- ask
   $logDebug $ "updating " <> tshow (tableIdentifier table)
-  liftBase $ Opaleye.runUpdate conn table permute filt
+  liftBase $ Opaleye.runUpdate conn (Opaleye.Update table permute filt Opaleye.rCount)
 
 -- |Run an Opaleye 'Opaleye.runDelete' against the database connection.
-runDelete :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> Opaleye.Column Opaleye.PGBool) -> m Int64
+runDelete :: MonadMigration m => Opaleye.Table columnsW columnsR -> (columnsR -> Opaleye.Field Opaleye.SqlBool) -> m Int64
 runDelete table filt = do
   conn <- ask
   $logDebug $ "deleting from " <> tshow (tableIdentifier table)
-  liftBase $ Opaleye.runDelete conn table filt
+  liftBase $ Opaleye.runDelete conn (Opaleye.Delete table filt Opaleye.rCount)
 
 -- |Check if a schema exists using the @information_schema@ views.
 doesSchemaExist :: MonadMigration m => Text -> m Bool

@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3ea333a27f3e783a20b2e2b007638d883e0d237d3a5cd67e51e81e63bd9d46c8
+-- hash: cb0819af9af4c8ead0a15b8f50705359b3ab805ca95ecba0c569adb4be9a019b
 
 name:           refurb
-version:        0.3.0.0
+version:        0.3.0.1
 synopsis:       Tools for maintaining a database
 description:    Tools for maintaining a database
 category:       Database
@@ -27,8 +27,8 @@ library
     , base >=4.7 && <5
     , bytestring
     , classy-prelude
-    , composite-base
-    , composite-opaleye
+    , composite-base ==0.8.*
+    , composite-opaleye ==0.8.*
     , dlist
     , exceptions
     , fast-logger
@@ -73,8 +73,8 @@ test-suite refurb-test
     , base >=4.7 && <5
     , bytestring
     , classy-prelude
-    , composite-base
-    , composite-opaleye
+    , composite-base ==0.8.*
+    , composite-opaleye ==0.8.*
     , dlist
     , exceptions
     , fast-logger

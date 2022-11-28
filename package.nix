@@ -7,7 +7,7 @@
 }:
 mkDerivation {
   pname = "refurb";
-  version = "0.3.0.0";
+  version = "0.3.0.1";
   src = ./.;
   libraryHaskellDepends = [
     ansi-wl-pprint base bytestring classy-prelude composite-base

@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 303cc00ec1aa1ac86c703c9836382d92da8bacf61b4c4bbb124b5ba6f9343df8
+-- hash: 3ea333a27f3e783a20b2e2b007638d883e0d237d3a5cd67e51e81e63bd9d46c8
 
 name:           refurb
-version:        0.2.3.0
+version:        0.3.0.0
 synopsis:       Tools for maintaining a database
 description:    Tools for maintaining a database
 category:       Database

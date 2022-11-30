@@ -1,9 +1,4 @@
 cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.34.7.
---
--- see: https://github.com/sol/hpack
-
 name:           refurb
 version:        0.3.0.2
 synopsis:       Tools for maintaining a database

@@ -1,0 +1,6 @@
+packages:
+  .
+  example
+
+package postgresql-libpq
+  flags: +use-pkg-config

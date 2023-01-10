@@ -38,6 +38,7 @@ data ConnInfo = ConnInfo
   , connDbName   :: Text
   -- ^What database in the PostgreSQL server to attach to.
   }
+  deriving (Eq, Show)
 
 -- |Given a 'ConnInfo' generate the connection string pairs that are shared between the loggable and real version, that is all of them except password.
 commonParams :: ConnInfo -> [(ByteString, ByteString)]

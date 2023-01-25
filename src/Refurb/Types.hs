@@ -8,8 +8,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 -- |Module containing externally useful types for Refurb, most notably the 'Migration' type.
 module Refurb.Types
-  ( ConnInfo(..)
-  , connInfoAsConnString, connInfoAsLogString
+  ( connectInfoAsLogString
   , MigrationType(..)
   , MonadMigration
   , Migration(..), migrationSchema, migrationKey, migrationType, migrationCheck, migrationExecute, migrationQualifiedKey
@@ -21,47 +20,16 @@ import Control.Lens.TH (makeLenses)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.Logger (MonadLogger)
 import Control.Monad.Trans.Control (MonadBaseControl)
-import qualified Data.ByteString.Char8 as BSC8
-import Data.Word (Word16)
 import qualified Database.PostgreSQL.Simple as PG
 
--- |Structure with connection information for connecting to the database.
-data ConnInfo = ConnInfo
-  { connHost     :: Text
-  -- ^Hostname or IP address of the PostgreSQL server.
-  , connPort     :: Word16
-  -- ^Port number the PostgreSQL server is running on (usually @5432@).
-  , connUser     :: Text
-  -- ^What user to connect to the database as.
-  , connPassword :: Text
-  -- ^What password to connect to the database with.
-  , connDbName   :: Text
-  -- ^What database in the PostgreSQL server to attach to.
-  }
-  deriving (Eq, Show)
+-- |Omit password from 'PG.ConnectInfo'
+omitPassword :: PG.ConnectInfo -> PG.ConnectInfo
+omitPassword info = info { PG.connectPassword = "<redacted>" }
 
--- |Given a 'ConnInfo' generate the connection string pairs that are shared between the loggable and real version, that is all of them except password.
-commonParams :: ConnInfo -> [(ByteString, ByteString)]
-commonParams (ConnInfo {..}) =
-  [ ("host",   encodeUtf8 connHost)
-  , ("port",   encodeUtf8 . tshow $ connPort)
-  , ("user",   encodeUtf8 connUser)
-  , ("dbname", encodeUtf8 connDbName)
-  ]
-
--- |Given a list of key/value pairs, make up a @key1=value1 key2=value2@ string that PostgreSQL expects.
-asConnString :: [(ByteString, ByteString)] -> ByteString
-asConnString = BSC8.intercalate " " . map (\ (key, val) -> key <> "=" <> val)
-
--- |Given a 'ConnInfo' make up the real connection string to pass when connecting to the database. Includes password, so never log this.
-connInfoAsConnString :: ConnInfo -> ByteString
-connInfoAsConnString connInfo@(ConnInfo { connPassword }) =
-  asConnString (("password", encodeUtf8 connPassword) : commonParams connInfo)
-
--- |Given a 'ConnInfo' make up the log-safe connection string to show to humans, which omits the password.
-connInfoAsLogString :: ConnInfo -> Text
-connInfoAsLogString =
-  decodeUtf8 . asConnString . commonParams
+-- |Given a 'PG.ConnectInfo' make up the log-safe connection string to show to humans, which omits the password.
+connectInfoAsLogString :: PG.ConnectInfo -> Text
+connectInfoAsLogString =
+  decodeUtf8 . PG.postgreSQLConnectionString . omitPassword
 
 -- |Enumeration of the types of migration that are known about.
 data MigrationType

@@ -5,6 +5,7 @@
 -- |Top level module of Refurb along which re-exports the library portion of Refurb ('Refurb.Types' and 'Refurb.MigrationUtils')
 module Refurb
   ( refurbMain
+  , refurbArgs
   , module Refurb.MigrationUtils
   , module Refurb.Types
   ) where
@@ -45,22 +46,24 @@ import Refurb.Types
 --     void $ execute_ "create table my_table (...)"
 --
 --   main :: IO ()
---   main = refurbMain readDatabaseConnInfo migrations
+--   main = refurbMain readDatabaseConnectInfo migrations
 -- @
-refurbMain :: (FilePath -> IO ConnInfo) -> [Migration] -> IO ()
-refurbMain readConnInfo migrations = do
+refurbMain :: (FilePath -> IO PG.ConnectInfo) -> [Migration] -> IO ()
+refurbMain readConnectInfo migrations = do
   opts@(Opts {..}) <- OA.execParser optsParser
+  connectInfo <- readConnectInfo configFile
+  refurbArgs opts connectInfo migrations
 
-  connInfo <- readConnInfo configFile
-
+refurbArgs :: Opts -> PG.ConnectInfo -> [Migration] -> IO ()
+refurbArgs opts@(Opts {..}) connectInfo migrations = do
   let logFilter = if debug
                   then \ _ _   -> True
                   else \ _ lvl -> lvl > LevelDebug
 
   runStdoutLoggingT . filterLogger logFilter $ do
-    $logDebug $ "Connecting to " <> tshow (connInfoAsLogString connInfo)
-    bracket (liftBase . PG.connectPostgreSQL $ connInfoAsConnString connInfo) (liftBase . PG.close) $ \ conn -> do
-      let context = Context opts conn connInfo migrations
+    $logDebug $ "Connecting to " <> tshow (connectInfoAsLogString connectInfo)
+    bracket (liftBase $ PG.connect connectInfo) (liftBase . PG.close) $ \ conn -> do
+      let context = Context opts conn connectInfo migrations
 
       unlessM (isSchemaPresent conn) $ initializeSchema conn
 

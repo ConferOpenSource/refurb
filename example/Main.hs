@@ -1,10 +1,9 @@
 module Main where
 
 import ClassyPrelude
-import Database.PostgreSQL.Simple (Only(Only))
+import Database.PostgreSQL.Simple (ConnectInfo(ConnectInfo), Only(Only))
 import Refurb
-  ( ConnInfo(ConnInfo)
-  , Migration, schemaMigration, seedDataMigration, withCheck
+  ( Migration, schemaMigration, seedDataMigration, withCheck
   , MonadMigration, doesTableExist, execute_, executeMany
   , refurbMain
   )
@@ -30,5 +29,4 @@ populateFirstTable =
     (map (Only . asText) $ words "foo bar baz")
 
 main :: IO ()
-main = refurbMain (const . pure $ ConnInfo "localhost" 5432 "example" "example" "example") migrations
-
+main = refurbMain (const . pure $ ConnectInfo "localhost" 5432 "example" "example" "example") migrations

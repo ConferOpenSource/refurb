@@ -15,18 +15,18 @@ import Control.Monad.Trans.Control (MonadBaseControl)
 import qualified Database.PostgreSQL.Simple as PG
 import Refurb.Cli (Opts, colorize)
 import Refurb.Store (MigrationResult(MigrationSuccess, MigrationFailure))
-import Refurb.Types (ConnInfo, Migration)
+import Refurb.Types (Migration)
 import Text.PrettyPrint.ANSI.Leijen (Doc, green, red, plain, text, putDoc)
 
 -- |Reader context for all command execution which contains the command line options, database connection and connection information, and known migrations.
 data Context = Context
-  { contextOptions    :: Opts
+  { contextOptions       :: Opts
   -- ^The 'Opts' structure parsed from the command line by @Refurb.Cli@.
-  , contextDbConn     :: PG.Connection
+  , contextDbConn        :: PG.Connection
   -- ^The open database 'PG.Connection'.
-  , contextDbConnInfo :: ConnInfo
+  , contextDbConnectInfo :: PG.ConnectInfo
   -- ^The information used to connect to the database, required for running command line tools like @pg_dump@ against the same database.
-  , contextMigrations :: [Migration]
+  , contextMigrations    :: [Migration]
   -- ^The known migrations passed in to 'Refurb.refurbMain'.
   }
 

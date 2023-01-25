@@ -7,8 +7,8 @@ module Refurb.Run.Backup where
 import ClassyPrelude
 import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (logInfo, logError)
-import Refurb.Run.Internal (MonadRefurb, contextDbConnInfo)
-import Refurb.Types (ConnInfo(ConnInfo), connDbName, connUser, connHost, connPort, connPassword)
+import qualified Database.PostgreSQL.Simple as PG
+import Refurb.Run.Internal (MonadRefurb, contextDbConnectInfo)
 import System.Environment (getEnvironment)
 import System.Exit (ExitCode(ExitSuccess, ExitFailure))
 import qualified System.Process as Proc
@@ -16,7 +16,7 @@ import qualified System.Process as Proc
 -- |Handle the @backup@ command by calling @pg_dump@ to save a database backup.
 backup :: MonadRefurb m => FilePath -> m ()
 backup path = do
-  ConnInfo {..} <- asks contextDbConnInfo
+  PG.ConnectInfo {..} <- asks contextDbConnectInfo
   $logInfo $ "Backing up database to " <> tshow path
   env <- liftBase getEnvironment
   let createProcess =
@@ -24,12 +24,12 @@ backup path = do
           [ "-Z", "9"  -- max compression
           , "-F", "c"  -- "custom" format - custom to pg_dump / pg_restore
           , "-f", path
-          , "-d", unpack connDbName
-          , "-U", unpack connUser
-          , "-h", unpack connHost
-          , "-p", show connPort
+          , "-d", connectDatabase
+          , "-U", connectUser
+          , "-h", connectHost
+          , "-p", show connectPort
           ]
-        ) { Proc.env = Just $ ("PGPASS", unpack connPassword) : env }
+        ) { Proc.env = Just $ ("PGPASS", connectPassword) : env }
 
   (exitCode, out, err) <- liftBase $ Proc.readCreateProcessWithExitCode createProcess ""
 

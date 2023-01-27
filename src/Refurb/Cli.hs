@@ -119,7 +119,6 @@ connectOpsParser = fileParser <|> paramsParser
     paramsParser = ConnectOpsParams
       <$> OA.strOption
             (  OA.long "host"
-            <> OA.short 'h'
             <> OA.metavar "DATABASE-HOST"
             <> OA.value "localhost"
             <> OA.help "Database host"
@@ -127,7 +126,6 @@ connectOpsParser = fileParser <|> paramsParser
             )
       <*> OA.option OA.auto
             (  OA.long "port"
-            <> OA.short 'p'
             <> OA.metavar "DATABASE-PORT"
             <> OA.value 5432
             <> OA.help "Database port"
@@ -135,7 +133,6 @@ connectOpsParser = fileParser <|> paramsParser
             )
       <*> OA.strOption
             (  OA.long "dbname"
-            <> OA.short 'd'
             <> OA.metavar "DATABASE-NAME"
             <> OA.value "postgres"
             <> OA.help "Database name"
@@ -143,7 +140,6 @@ connectOpsParser = fileParser <|> paramsParser
             )
       <*> OA.strOption
             (  OA.long "user"
-            <> OA.short 'u'
             <> OA.metavar "DATABASE-USER"
             <> OA.value "postgres"
             <> OA.help "Database user"

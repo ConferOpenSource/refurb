@@ -1,12 +1,18 @@
 module Main where
 
 import ClassyPrelude
+import Control.Monad.Catch (throwM)
 import Database.PostgreSQL.Simple (ConnectInfo(ConnectInfo), Only(Only))
 import Refurb
   ( Migration, schemaMigration, seedDataMigration, withCheck
   , MonadMigration, doesTableExist, execute_, executeMany
   , refurbMain
   )
+
+data MigrationException = MigrationException Text
+  deriving (Eq, Show)
+
+instance Exception MigrationException
 
 migrations :: [Migration]
 migrations =
@@ -21,7 +27,7 @@ createFirstTable = do
 
 firstTableMustExist :: MonadMigration m => m ()
 firstTableMustExist =
-  doesTableExist "example" "first_table" >>= bool (fail "first_table doesn't exist!!") (pure ())
+  doesTableExist "example" "first_table" >>= bool (throwM $ MigrationException "first_table doesn't exist!!") (pure ())
 
 populateFirstTable :: MonadMigration m => m ()
 populateFirstTable =

@@ -41,6 +41,7 @@ executable refurb-example-exe
   build-depends:
       base >=4.7 && <5
     , classy-prelude
+    , exceptions
     , postgresql-simple
     , refurb
   other-modules:

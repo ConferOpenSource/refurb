@@ -15,7 +15,7 @@ import Control.Monad.Base (liftBase)
 import Control.Monad.Logger (LogLevel(LevelDebug), filterLogger, logDebug, runStdoutLoggingT)
 import qualified Database.PostgreSQL.Simple as PG
 import qualified Options.Applicative as OA
-import Refurb.Cli (Command(CommandMigrate, CommandShowLog, CommandShowMigration, CommandBackup), Opts(Opts, debug, command, configFile), optsParser)
+import Refurb.Cli (Command(CommandMigrate, CommandShowLog, CommandShowMigration, CommandBackup), ConnectOps(ConnectOpsFile, ConnectOpsParams), Opts(Opts, debug, command, config), optsParser)
 import Refurb.MigrationUtils
 import Refurb.Run.Backup (backup)
 import Refurb.Run.Internal (Context(Context))
@@ -23,6 +23,7 @@ import Refurb.Run.Info (showMigration, showLog)
 import Refurb.Run.Migrate (migrate)
 import Refurb.Store (isSchemaPresent, initializeSchema)
 import Refurb.Types
+import System.Environment (lookupEnv)
 
 -- |Main entry point for refurbishing.
 --
@@ -51,7 +52,17 @@ import Refurb.Types
 refurbMain :: (FilePath -> IO PG.ConnectInfo) -> [Migration] -> IO ()
 refurbMain readConnectInfo migrations = do
   opts@(Opts {..}) <- OA.execParser optsParser
-  connectInfo <- readConnectInfo configFile
+  connectInfo <- case config of
+    ConnectOpsFile file -> readConnectInfo file
+    ConnectOpsParams host port dbname user -> do
+      password <- lookupEnv "PGPASS"
+      pure PG.ConnectInfo
+        { connectHost = host,
+          connectPort = port,
+          connectUser = user,
+          connectPassword = fromMaybe "" password,
+          connectDatabase = dbname
+        }
   refurbArgs opts connectInfo migrations
 
 refurbArgs :: Opts -> PG.ConnectInfo -> [Migration] -> IO ()

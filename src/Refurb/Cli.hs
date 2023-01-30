@@ -4,6 +4,7 @@ module Refurb.Cli where
 
 import ClassyPrelude
 import Composite.Record ((:->)(Val))
+import Data.Word (Word16)
 import qualified Options.Applicative as OA
 import Refurb.Store (FQualifiedKey)
 
@@ -86,17 +87,65 @@ commandBackupParser =
     )
     ( OA.progDesc "Back up the database" )
 
+-- |Options for connecting to database.
+data ConnectOps
+  = ConnectOpsFile FilePath
+  -- ^Connect via a file
+  | ConnectOpsParams String Word16 String String
+  -- ^Connect via parameters - reads password from PGPASS
+
 -- |Structure holding the parsed command line arguments and options.
 data Opts = Opts
-  { debug      :: Bool
+  { debug    :: Bool
   -- ^Whether to turn on debug logging to the console
-  , colorize   :: Bool
+  , colorize :: Bool
   -- ^Whether to colorize console output
-  , configFile :: FilePath
-  -- ^The configuration file where (presumably) the database connection information is stored
-  , command    :: Command
+  , config   :: ConnectOps
+  -- ^See 'ConnectOps'
+  , command  :: Command
   -- ^Which command the user chose and the options for that command
   }
+
+connectOpsParser :: OA.Parser ConnectOps
+connectOpsParser = fileParser <|> paramsParser
+  where
+    fileParser = ConnectOpsFile
+      <$> OA.strOption
+            (  OA.long "config"
+            <> OA.short 'c'
+            <> OA.metavar "SERVER-CONFIG"
+            <> OA.help "Path to server config file to read database connection information from"
+            )
+    paramsParser = ConnectOpsParams
+      <$> OA.strOption
+            (  OA.long "host"
+            <> OA.metavar "DATABASE-HOST"
+            <> OA.value "localhost"
+            <> OA.help "Database host"
+            <> OA.showDefault
+            )
+      <*> OA.option OA.auto
+            (  OA.long "port"
+            <> OA.metavar "DATABASE-PORT"
+            <> OA.value 5432
+            <> OA.help "Database port"
+            <> OA.showDefault
+            )
+      <*> OA.strOption
+            (  OA.long "dbname"
+            <> OA.metavar "DATABASE-NAME"
+            <> OA.value "postgres"
+            <> OA.help "Database name"
+            <> OA.showDefault
+            )
+      <*> OA.strOption
+            (  OA.long "user"
+            <> OA.metavar "DATABASE-USER"
+            <> OA.value "postgres"
+            <> OA.help "Database user"
+            <> OA.showDefault
+            )
+
 
 -- |Parser for the command line arguments
 optsParser :: OA.ParserInfo Opts
@@ -111,12 +160,7 @@ optsParser =
                 <> OA.help "Turn on debug diagnostic logging"
                 )
           <*> (not <$> OA.switch (OA.long "no-color" <> OA.help "disable ANSI colorization"))
-          <*> OA.strOption
-                (  OA.long "config"
-                <> OA.short 'c'
-                <> OA.metavar "SERVER-CONFIG"
-                <> OA.help "Path to server config file to read database connection information from"
-                )
+          <*> connectOpsParser
           <*> OA.hsubparser
                 (  OA.command "migrate"        commandMigrateParser
                 <> OA.command "show-log"       commandShowLogParser

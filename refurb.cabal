@@ -41,7 +41,7 @@ library
     , monad-control
     , monad-logger
     , old-locale
-    , opaleye ==0.9.2.*
+    , opaleye >= 0.9.2 && <0.9.4
     , optparse-applicative
     , postgresql-simple
     , process
@@ -79,7 +79,7 @@ test-suite refurb-test
     , monad-control
     , monad-logger
     , old-locale
-    , opaleye ==0.9.2.*
+    , opaleye >= 0.9.2 && <0.9.4
     , optparse-applicative
     , postgresql-simple
     , process

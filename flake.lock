@@ -1,0 +1,115 @@
+{
+  "nodes": {
+    "composite": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1701717140,
+        "narHash": "sha256-YxkFMAkBXXZJccb2VijYj0fPn+3rZyDSh2CI8jJK0Hc=",
+        "owner": "composite-hs",
+        "repo": "composite",
+        "rev": "e90f04c67bd273d5d52daa55594b6c753dadfdaf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "composite-hs",
+        "repo": "composite",
+        "rev": "e90f04c67bd273d5d52daa55594b6c753dadfdaf",
+        "type": "github"
+      }
+    },
+    "composite-base": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1701717116,
+        "narHash": "sha256-+QHegQnR5+lRZnrrJd8SrTWUNuHt+xIZECwebX/F+JA=",
+        "owner": "composite-hs",
+        "repo": "composite-base",
+        "rev": "d946fb096f777cb99482b0f8899d6aff13811932",
+        "type": "github"
+      },
+      "original": {
+        "owner": "composite-hs",
+        "repo": "composite-base",
+        "rev": "d946fb096f777cb99482b0f8899d6aff13811932",
+        "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1709336216,
+        "narHash": "sha256-Dt/wOWeW6Sqm11Yh+2+t0dfEWxoMxGBvv3JpIocFl9E=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "f7b3c975cf067e56e7cda6cb098ebe3fb4d74ca2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "haskell-flake": {
+      "locked": {
+        "lastModified": 1710675764,
+        "narHash": "sha256-ZpBoh1dVLTxC3wccOnsji7u/Ceuwh2raQn/Vq6BBYwo=",
+        "owner": "srid",
+        "repo": "haskell-flake",
+        "rev": "ef955d7d239d7f82f343b569a4cf2c7c1a4df1f4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "repo": "haskell-flake",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1711048004,
+        "narHash": "sha256-fI9nyTXbQsZYNre67OXz0nNgcXXlNfN470WJv8Qw3eE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "8c2a8f922ff4eb12bc2d6d1486f247ee3f02279e",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "release-23.11",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "dir": "lib",
+        "lastModified": 1709237383,
+        "narHash": "sha256-cy6ArO4k5qTx+l5o+0mL9f5fa86tYUX3ozE1S+Txlds=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1536926ef5621b09bba54035ae2bb6d806d72ac8",
+        "type": "github"
+      },
+      "original": {
+        "dir": "lib",
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "composite": "composite",
+        "composite-base": "composite-base",
+        "flake-parts": "flake-parts",
+        "haskell-flake": "haskell-flake",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

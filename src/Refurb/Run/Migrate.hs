@@ -20,7 +20,7 @@ import Data.These.Lens (_This)
 import Data.These (_This)
 #endif
 import Data.Thyme.Clock (NominalDiffTime, getCurrentTime, toSeconds)
-import Data.Thyme.Format (formatTime)
+import Data.Thyme.Format (defaultTimeLocale, formatTime)
 import Data.Thyme.Format.Human (humanTimeDiff)
 import Data.Thyme.Time.Core (fromThyme)
 import qualified Database.PostgreSQL.Simple as PG
@@ -34,7 +34,6 @@ import Refurb.Run.Internal (MonadRefurb, contextDbConn, contextMigrations, optio
 import Refurb.Store (MigrationLogW, MigrationLogColsW, MigrationResult(MigrationSuccess, MigrationFailure), migrationLog, isProdSystem, readMigrationStatus)
 import Refurb.Types (Migration, migrationQualifiedKey, migrationSchema, migrationType, migrationCheck, migrationExecute, MigrationType(MigrationSchema))
 import System.Exit (exitFailure)
-import System.Locale (defaultTimeLocale)
 import System.Log.FastLogger (LogStr, fromLogStr, toLogStr)
 import Text.PrettyPrint.ANSI.Leijen (Doc, (</>), (<+>), hang, fillSep, red, green, white, text)
 
